@@ -1,4 +1,4 @@
-const { handleAnalyzeUrl } = require('./services/analyzeController');
+const { handleAnalyzeUrl } = require('./_services/analyzeController');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
