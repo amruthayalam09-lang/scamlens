@@ -27,14 +27,14 @@ export default function RiskMeter({ assessment }) {
       </div>
 
       <div className="risk-details">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem' }}>
+        <div className="risk-details-header">
           <h3>Risk Assessment Overview</h3>
           {aiAnalysis?.available ? (
-            <span style={{ fontSize: '0.72rem', background: 'rgba(59, 130, 246, 0.15)', color: '#93c5fd', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
+            <span className="engine-badge ai">
               🤖 Gemini AI + Rules
             </span>
           ) : (
-            <span style={{ fontSize: '0.72rem', background: 'rgba(100, 116, 139, 0.2)', color: '#94a3b8', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(100, 116, 139, 0.3)' }}>
+            <span className="engine-badge rules">
               ⚡ Rule Pattern Engine
             </span>
           )}
@@ -45,8 +45,8 @@ export default function RiskMeter({ assessment }) {
         </p>
 
         {categories.length > 0 && (
-          <div>
-            <div style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>
+          <div className="threat-vectors-section">
+            <div className="threat-vectors-label">
               Identified Threat Vectors:
             </div>
             <div className="indicator-tags">

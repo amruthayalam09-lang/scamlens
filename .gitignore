@@ -3,5 +3,7 @@ node_modules/
 .env.*
 !.env.example
 dist/
+frontend/dist/
 build/
 coverage/
+.vercel

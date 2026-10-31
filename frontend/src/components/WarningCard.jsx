@@ -12,14 +12,7 @@ export default function WarningCard({
       <div>
         <div className="warning-card-header">
           <span className="warning-category">{categoryLabel || 'Warning Sign'}</span>
-          <span
-            style={{
-              fontSize: '0.7rem',
-              fontWeight: '700',
-              textTransform: 'uppercase',
-              color: severity === 'high' ? '#f87171' : '#fbbf24'
-            }}
-          >
+          <span className={`warning-severity-badge ${severity}`}>
             {severity} Risk
           </span>
         </div>
@@ -37,8 +30,8 @@ export default function WarningCard({
 
       {recommendation && (
         <div className="warning-tip">
-          <span>💡</span>
-          <span>{recommendation}</span>
+          <span className="warning-tip-icon">💡</span>
+          <span className="warning-tip-text">{recommendation}</span>
         </div>
       )}
     </div>

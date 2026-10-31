@@ -69,7 +69,7 @@ export default function HighlightViewer({ text, matches = [] }) {
     <div className="card">
       <div className="card-header">
         <h3 className="card-title">📝 Detected Warning Phrases in Text</h3>
-        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+        <span className="highlight-hint">
           Hover over highlighted words to see scam category
         </span>
       </div>

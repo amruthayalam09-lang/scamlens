@@ -4,8 +4,8 @@ export default function ApiKeyNotice({ setupInstructions }) {
   const steps = setupInstructions || {
     step1: 'Visit Google AI Studio at https://aistudio.google.com/app/apikey',
     step2: 'Click "Create API Key" (it is free for developers & college projects)',
-    step3: 'Open the file "backend/.env" in your project folder',
-    step4: 'Set: GEMINI_API_KEY=your_actual_key_here and restart the backend server'
+    step3: 'For local: add to backend/.env | For Vercel: add GEMINI_API_KEY in Vercel Project Settings → Environment Variables',
+    step4: 'Restart your backend or trigger a Vercel redeploy'
   };
 
   return (
@@ -23,11 +23,11 @@ export default function ApiKeyNotice({ setupInstructions }) {
               (Open AI Studio ↗)
             </a>
           </li>
-          <li>2. {steps.step2 || 'Create an API Key'}</li>
+          <li>2. {steps.step2}</li>
           <li>
-            3. Open <code>backend/.env</code> in your editor and paste: <code>GEMINI_API_KEY=AIzaSy...</code>
+            3. In local: paste <code>GEMINI_API_KEY=AIzaSy...</code> into <code>backend/.env</code>. On Vercel: set <code>GEMINI_API_KEY</code> in Project Settings.
           </li>
-          <li>4. Save the file and restart your backend.</li>
+          <li>4. {steps.step4}</li>
         </ol>
       </div>
     </div>

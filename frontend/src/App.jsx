@@ -312,7 +312,7 @@ export default function App() {
         >
           <span>✉️</span>
           <span>Email / Sender Scanner</span>
-          <span className="tab-badge" style={{ background: '#a78bfa', color: '#1e1b4b' }}>EMAIL</span>
+          <span className="tab-badge email-badge">EMAIL</span>
         </button>
       </div>
 
@@ -356,9 +356,9 @@ export default function App() {
 
       {/* Error Message */}
       {error && (
-        <div className="card" style={{ borderLeft: '4px solid #ef4444', background: 'rgba(239, 68, 68, 0.1)' }}>
-          <strong style={{ color: '#f87171' }}>⚠️ Error during analysis:</strong>
-          <p style={{ marginTop: '0.25rem', fontSize: '0.9rem' }}>{error}</p>
+        <div className="card alert-card error">
+          <div className="alert-card-title">⚠️ Error during analysis:</div>
+          <p className="alert-card-message">{error}</p>
         </div>
       )}
 
@@ -463,16 +463,16 @@ export default function App() {
 
           {/* 3. Reassurance Card if zero suspicious indicators were found */}
           {warningCards.length === 0 && (
-            <div className="card" style={{ borderLeft: '4px solid #10b981', background: 'rgba(16, 185, 129, 0.08)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem' }}>
-                <span style={{ fontSize: '1.25rem' }}>✅</span>
-                <strong style={{ color: '#34d399', fontSize: '1.05rem' }}>
+            <div className="card alert-card success">
+              <div className="alert-card-header">
+                <span className="alert-card-icon">✅</span>
+                <strong className="alert-card-headline">
                   {activeTab === 'message' && 'No Obvious Scam Indicators Detected'}
                   {activeTab === 'url' && 'No Obvious Link Deception Detected'}
                   {activeTab === 'email' && 'No Obvious Sender Deception Detected'}
                 </strong>
               </div>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+              <p className="alert-card-body">
                 {activeTab === 'message' && 'This message does not appear to contain known scam keywords, advance-payment demands, artificial urgency, or OTP harvesting patterns. As always, continue exercising standard caution with unsolicited senders.'}
                 {activeTab === 'url' && 'This web address does not appear to contain known typosquatting, brand impersonation in subdomains, raw IP patterns, or high-risk TLD tricks. Always verify the domain name matches the official site.'}
                 {activeTab === 'email' && 'This email address does not appear to exhibit known brand impersonation, disposable inbox traits, or lookalike typosquatting. Always exercise normal caution with unexpected attachments.'}

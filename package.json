@@ -3,12 +3,26 @@
   "version": "1.0.0",
   "description": "ScamLens: AI-Powered Scam Pattern Detection for Ordinary People",
   "scripts": {
+    "dev": "node backend/src/server.js",
     "start": "node backend/src/server.js",
     "backend": "node backend/src/server.js",
     "frontend": "npm --prefix frontend run dev",
     "build": "npm --prefix frontend run build"
   },
-  "keywords": ["scam-detection", "ai", "gemini", "cybersecurity", "college-project"],
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "dependencies": {
+    "@google/genai": "^2.31.0"
+  },
+  "keywords": [
+    "scam-detection",
+    "ai",
+    "gemini",
+    "cybersecurity",
+    "college-project"
+  ],
   "author": "",
   "license": "ISC"
 }
