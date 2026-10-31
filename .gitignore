@@ -7,3 +7,4 @@ frontend/dist/
 build/
 coverage/
 .vercel
+package-lock.json
