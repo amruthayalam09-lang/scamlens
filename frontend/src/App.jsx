@@ -16,6 +16,8 @@ import WarningCard from './components/WarningCard';
 import SafetyChecklist from './components/SafetyChecklist';
 import Disclaimer from './components/Disclaimer';
 import ApiKeyNotice from './components/ApiKeyNotice';
+import Dashboard from './components/Dashboard';
+import { saveAnalysisRecord } from './utils/historyStorage';
 import {
   ShieldCheckIcon,
   ShieldAlertIcon,
@@ -28,7 +30,8 @@ import {
   CpuIcon,
   SparklesIcon,
   ChevronRightIcon,
-  ImageIcon
+  ImageIcon,
+  BarChartIcon
 } from './components/Icons';
 
 export default function App() {
@@ -115,6 +118,14 @@ export default function App() {
       setMessageAssessment(data.assessment);
       setLastAnalyzedText(message.trim());
 
+      // Save to local privacy-conscious threat history
+      saveAnalysisRecord({
+        type: 'message',
+        inputPreview: message.trim(),
+        fullInput: message.trim(),
+        assessment: data.assessment
+      });
+
       if (data.assessment?.aiAnalysis?.available !== undefined) {
         setGeminiConfigured(data.assessment.aiAnalysis.available);
       }
@@ -161,6 +172,14 @@ export default function App() {
       }
 
       setUrlAssessment(data.assessment);
+
+      // Save to local privacy-conscious threat history
+      saveAnalysisRecord({
+        type: 'url',
+        inputPreview: url.trim(),
+        fullInput: url.trim(),
+        assessment: data.assessment
+      });
     } catch (err) {
       console.error('URL analysis error:', err);
       setUrlAssessment(null);
@@ -204,6 +223,14 @@ export default function App() {
       }
 
       setEmailAssessment(data.assessment);
+
+      // Save to local privacy-conscious threat history
+      saveAnalysisRecord({
+        type: 'email',
+        inputPreview: email.trim(),
+        fullInput: email.trim(),
+        assessment: data.assessment
+      });
     } catch (err) {
       console.error('Email analysis error:', err);
       setEmailAssessment(null);
@@ -276,6 +303,11 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const scrollToDashboard = () => {
+    const el = document.getElementById('dashboard');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const scrollToScreenshot = () => {
     const el = document.getElementById('screenshot-analyzer');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -289,6 +321,30 @@ export default function App() {
   const scrollToHowItWorks = () => {
     const el = document.getElementById('how-it-works');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleLoadInScanner = (record) => {
+    if (!record) return;
+
+    if (record.type === 'message') {
+      setActiveTab('message');
+      setMessage(record.fullInput || record.preview || '');
+      setLastAnalyzedText(record.fullInput || record.preview || '');
+      setMessageAssessment(record.assessment);
+      scrollToScanner();
+    } else if (record.type === 'url') {
+      setActiveTab('url');
+      setUrl(record.fullInput || record.preview || '');
+      setUrlAssessment(record.assessment);
+      scrollToScanner();
+    } else if (record.type === 'email') {
+      setActiveTab('email');
+      setEmail(record.fullInput || record.preview || '');
+      setEmailAssessment(record.assessment);
+      scrollToScanner();
+    } else if (record.type === 'screenshot') {
+      scrollToScreenshot();
+    }
   };
 
   return (
@@ -328,6 +384,15 @@ export default function App() {
                 >
                   <ZapIcon size={18} />
                   <span>Scan Content</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-hero-assistant"
+                  onClick={scrollToDashboard}
+                >
+                  <BarChartIcon size={18} />
+                  <span>Risk Dashboard</span>
                 </button>
 
                 <button
@@ -575,7 +640,10 @@ export default function App() {
           </div>
         </section>
 
-        {/* 4. Screenshot Analyzer Section */}
+        {/* 4. Scam Risk Analytics Dashboard */}
+        <Dashboard onLoadInScanner={handleLoadInScanner} />
+
+        {/* 5. Screenshot Analyzer Section */}
         <section id="screenshot-analyzer" className="screenshot-section">
           <div className="section-container">
             <div className="section-header-center">

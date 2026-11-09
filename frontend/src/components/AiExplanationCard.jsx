@@ -85,3 +85,4 @@ export default function AiExplanationCard({ aiExplanation, scamType, riskLevel }
     </div>
   );
 }
+

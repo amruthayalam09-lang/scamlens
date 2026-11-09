@@ -236,3 +236,4 @@ export default function WarningSignsCard({ warningSigns = [] }) {
     </div>
   );
 }
+

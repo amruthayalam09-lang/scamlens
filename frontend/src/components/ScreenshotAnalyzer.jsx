@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { saveAnalysisRecord } from '../utils/historyStorage';
 import {
   UploadCloudIcon,
   ImageIcon,
@@ -213,6 +214,14 @@ export default function ScreenshotAnalyzer({ geminiConfigured }) {
       }
 
       setAssessment(data.assessment);
+
+      // Record in local threat history
+      saveAnalysisRecord({
+        type: 'screenshot',
+        inputPreview: data.assessment.extractedText || 'Uploaded Screenshot Image',
+        fullInput: data.assessment.extractedText || 'Image OCR Analysis',
+        assessment: data.assessment
+      });
     } catch (err) {
       console.error('Screenshot analysis error:', err);
       if (err.name === 'AbortError') {
