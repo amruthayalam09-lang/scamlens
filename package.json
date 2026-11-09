@@ -16,6 +16,11 @@
   "dependencies": {
     "@google/genai": "^2.31.0"
   },
+  "optionalDependencies": {
+    "@rolldown/binding-linux-x64-gnu": "1.2.15",
+    "@rolldown/binding-linux-x64-musl": "1.2.15",
+    "@rolldown/binding-wasm32-wasi": "1.2.15"
+  },
   "keywords": [
     "scam-detection",
     "ai",

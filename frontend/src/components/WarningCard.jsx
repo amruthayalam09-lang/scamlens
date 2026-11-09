@@ -1,4 +1,5 @@
 import React from 'react';
+import { AlertTriangleIcon, LightbulbIcon, ShieldAlertIcon } from './Icons';
 
 export default function WarningCard({
   categoryLabel,
@@ -7,31 +8,39 @@ export default function WarningCard({
   severity = 'medium',
   recommendation
 }) {
+  const isHigh = severity === 'high';
+  const isLow = severity === 'low';
+
   return (
-    <div className={`warning-card ${severity}`}>
-      <div>
-        <div className="warning-card-header">
-          <span className="warning-category">{categoryLabel || 'Warning Sign'}</span>
-          <span className={`warning-severity-badge ${severity}`}>
-            {severity} Risk
-          </span>
+    <div className={`cyber-warning-card ${severity}`}>
+      <div className="card-top-bar">
+        <div className="warning-category-group">
+          <span className="warning-category-title">{categoryLabel || 'Warning Indicator'}</span>
         </div>
-
-        {phrase && (
-          <div className="warning-phrase">
-            "{phrase}"
-          </div>
-        )}
-
-        <p className="warning-explanation">
-          {explanation}
-        </p>
+        <span className={`severity-tag ${severity}`}>
+          <span className="severity-pulse"></span>
+          {severity.toUpperCase()} RISK
+        </span>
       </div>
 
+      {phrase && (
+        <div className="flagged-phrase-box">
+          <span className="phrase-prefix">&gt; Flagged Clue:</span>
+          <code className="phrase-text">"{phrase}"</code>
+        </div>
+      )}
+
+      <p className="warning-explanation-text">
+        {explanation}
+      </p>
+
       {recommendation && (
-        <div className="warning-tip">
-          <span className="warning-tip-icon">💡</span>
-          <span className="warning-tip-text">{recommendation}</span>
+        <div className="warning-remedy-box">
+          <LightbulbIcon size={16} className="remedy-icon" />
+          <div className="remedy-content">
+            <span className="remedy-label">Defensive Action: </span>
+            <span className="remedy-text">{recommendation}</span>
+          </div>
         </div>
       )}
     </div>

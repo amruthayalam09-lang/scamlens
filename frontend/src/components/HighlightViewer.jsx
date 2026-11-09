@@ -1,18 +1,23 @@
 import React from 'react';
+import { TerminalIcon, AlertTriangleIcon } from './Icons';
 
 /**
- * Renders the analyzed text with exact suspicious phrases highlighted.
+ * Renders the analyzed text in a cybersecurity terminal view with exact suspicious phrases highlighted.
  */
 export default function HighlightViewer({ text, matches = [] }) {
   if (!text) return null;
 
   if (!matches || matches.length === 0) {
     return (
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">📝 Analyzed Message Text</h3>
+      <div className="dashboard-section-card">
+        <div className="section-card-header">
+          <div className="section-header-title">
+            <TerminalIcon size={18} className="section-icon" />
+            <h3 className="section-title">Analyzed Message Text Payload</h3>
+          </div>
+          <span className="section-header-badge clean">Zero Indicators Flagged</span>
         </div>
-        <div className="highlight-viewer">
+        <div className="terminal-highlight-viewer clean">
           {text}
         </div>
       </div>
@@ -66,24 +71,29 @@ export default function HighlightViewer({ text, matches = [] }) {
   }
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <h3 className="card-title">📝 Detected Warning Phrases in Text</h3>
-        <span className="highlight-hint">
-          Hover over highlighted words to see scam category
+    <div className="dashboard-section-card">
+      <div className="section-card-header">
+        <div className="section-header-title">
+          <TerminalIcon size={18} className="section-icon" />
+          <h3 className="section-title">Detected Attack Vectors in Text</h3>
+        </div>
+        <span className="section-header-hint">
+          Hover over highlighted phrases to view category explanations
         </span>
       </div>
 
-      <div className="highlight-viewer">
+      <div className="terminal-highlight-viewer">
         {segments.map((seg) => {
           if (seg.type === 'highlight') {
+            const isHigh = seg.match.severity === 'high';
             return (
               <mark
                 key={seg.key}
-                className={`mark-suspicious ${seg.match.severity === 'high' ? 'high' : 'medium'}`}
+                className={`cyber-mark ${isHigh ? 'severity-high' : 'severity-medium'}`}
                 title={`[${seg.match.categoryLabel}] ${seg.match.explanation}`}
               >
-                {seg.content}
+                <span className="mark-content">{seg.content}</span>
+                <span className="mark-badge">{seg.match.categoryLabel}</span>
               </mark>
             );
           }

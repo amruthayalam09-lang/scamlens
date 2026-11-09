@@ -1,18 +1,19 @@
 import React from 'react';
+import { ShieldIcon } from './Icons';
 
 export default function Disclaimer({ text }) {
   const defaultText =
     text ||
-    'Important Notice: ScamLens provides an automated risk assessment based on keyword pattern detection and AI reasoning. This is an educational and advisory assessment, not legal or definitive proof that a message is fraudulent or safe. If in doubt, independently verify with official organizations before clicking links or sending money.';
+    'Important Notice: ScamLens provides automated pattern assessments based on keyword heuristic rules and Gemini AI contextual evaluation. This is an educational and advisory assessment, not definitive legal proof that a communication is fraudulent or safe. Always verify independently through official telephone lines or verified websites before taking financial actions.';
 
   return (
-    <div className="disclaimer-card">
-      <span style={{ fontSize: '1.25rem', lineHeight: '1' }}>⚖️</span>
-      <div>
-        <strong style={{ display: 'block', color: 'var(--text-primary)', marginBottom: '0.2rem' }}>
-          Advisory Assessment Disclaimer
-        </strong>
-        <p>{defaultText}</p>
+    <div className="compliance-disclaimer-card">
+      <div className="disclaimer-icon-wrap">
+        <ShieldIcon size={20} className="disclaimer-icon" />
+      </div>
+      <div className="disclaimer-text-wrap">
+        <strong className="disclaimer-heading">Advisory Assessment & Ethical AI Notice</strong>
+        <p className="disclaimer-body">{defaultText}</p>
       </div>
     </div>
   );

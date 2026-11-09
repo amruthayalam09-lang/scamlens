@@ -1,4 +1,5 @@
 import React from 'react';
+import { GlobeIcon, LockIcon, UnlockIcon, ShieldCheckIcon, AlertTriangleIcon } from './Icons';
 
 /**
  * Safely displays analyzed URL metadata without rendering clickable links.
@@ -10,43 +11,58 @@ export default function UrlViewer({ assessment }) {
   const isInsecureHttp = protocol === 'http:';
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <h3 className="card-title">🌐 Analyzed URL Breakdown</h3>
-        <span className="safe-badge">
-          🛡️ Safe Preview — Link is not clickable
+    <div className="dashboard-section-card">
+      <div className="section-card-header">
+        <div className="section-header-title">
+          <GlobeIcon size={18} className="section-icon" />
+          <h3 className="section-title">URL & Network Architecture Inspection</h3>
+        </div>
+        <span className="isolated-preview-badge">
+          <ShieldCheckIcon size={14} />
+          Isolated Preview — Hyperlink Execution Blocked
         </span>
       </div>
 
-      <div className="url-preview-box">
-        <code className="url-code-text">{url}</code>
+      {/* Code Inspector Box */}
+      <div className="cyber-code-block">
+        <span className="code-lang-tag">RAW URL PAYLOAD</span>
+        <code className="inspected-url-code">{url}</code>
       </div>
 
-      <div className="url-meta-grid">
-        <div className="url-meta-item">
-          <span className="meta-label">Protocol Security</span>
-          <span className={`meta-value ${isInsecureHttp ? 'insecure' : 'secure'}`}>
-            {isInsecureHttp ? '⚠️ HTTP (Unencrypted)' : '🔒 HTTPS (Encrypted)'}
-          </span>
+      {/* Grid of Network Parameters */}
+      <div className="telemetry-grid">
+        <div className="telemetry-item">
+          <span className="telemetry-label">Protocol Security</span>
+          <div className="telemetry-value-row">
+            {isInsecureHttp ? (
+              <span className="status-val danger">
+                <UnlockIcon size={16} /> HTTP (Unencrypted / High Risk)
+              </span>
+            ) : (
+              <span className="status-val secure">
+                <LockIcon size={16} /> HTTPS (TLS Encrypted Connection)
+              </span>
+            )}
+          </div>
         </div>
 
-        <div className="url-meta-item">
-          <span className="meta-label">Real Registered Domain</span>
-          <span className="meta-value highlight-domain">
+        <div className="telemetry-item">
+          <span className="telemetry-label">Real Registered Domain</span>
+          <span className="status-val highlight-domain">
             {mainDomain || hostname}
           </span>
         </div>
 
-        <div className="url-meta-item">
-          <span className="meta-label">Subdomain Prefix</span>
-          <span className="meta-value">
+        <div className="telemetry-item">
+          <span className="telemetry-label">Subdomain Prefixes</span>
+          <span className="status-val mono">
             {subdomains && subdomains !== '(None)' ? subdomains : '(None)'}
           </span>
         </div>
 
-        <div className="url-meta-item">
-          <span className="meta-label">Target Path</span>
-          <span className="meta-value">
+        <div className="telemetry-item">
+          <span className="telemetry-label">Resource Target Path</span>
+          <span className="status-val mono">
             {path || '/'}
           </span>
         </div>
