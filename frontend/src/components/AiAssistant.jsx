@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { apiRequest } from '../utils/api';
 import {
   SparklesIcon,
   SendIcon,
@@ -97,24 +98,20 @@ export default function AiAssistant({ geminiConfigured }) {
         }));
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 28000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: messageText,
-          history: historyPayload
-        }),
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || `Server returned status ${response.status}`);
+      let data;
+      try {
+        data = await apiRequest('/api/chat', {
+          method: 'POST',
+          body: JSON.stringify({
+            message: messageText,
+            history: historyPayload
+          }),
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeoutId);
       }
 
       const aiResponse = {

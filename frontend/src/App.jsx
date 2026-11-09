@@ -19,6 +19,7 @@ import ApiKeyNotice from './components/ApiKeyNotice';
 import Dashboard from './components/Dashboard';
 import ScamTranslator from './components/ScamTranslator';
 import { saveAnalysisRecord } from './utils/historyStorage';
+import { apiRequest } from './utils/api';
 import {
   ShieldCheckIcon,
   ShieldAlertIcon,
@@ -68,22 +69,17 @@ export default function App() {
   useEffect(() => {
     async function checkStatus() {
       try {
-        const res = await fetch('/api/status');
-        if (res.ok) {
-          const data = await res.json();
-          setBackendStatus(true);
-          setGeminiConfigured(Boolean(data.geminiConfigured));
-        } else {
-          setBackendStatus(false);
-        }
+        const data = await apiRequest('/api/status');
+        setBackendStatus(true);
+        setGeminiConfigured(Boolean(data.geminiConfigured));
       } catch (err) {
-        console.warn('Backend server not reachable yet:', err);
+        console.warn('Backend server not reachable yet:', err.message);
         setBackendStatus(false);
       }
     }
 
     checkStatus();
-    const interval = setInterval(checkStatus, 10000);
+    const interval = setInterval(checkStatus, 15000);
     return () => clearInterval(interval);
   }, []);
 
@@ -96,24 +92,17 @@ export default function App() {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      const timeoutId = setTimeout(() => controller.abort(), 35000);
 
-      let response;
+      let data;
       try {
-        response = await fetch('/api/analyze', {
+        data = await apiRequest('/api/analyze', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: message.trim() }),
           signal: controller.signal
         });
       } finally {
         clearTimeout(timeoutId);
-      }
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || `Server returned ${response.status}`);
       }
 
       setMessageAssessment(data.assessment);
@@ -152,24 +141,17 @@ export default function App() {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
 
-      let response;
+      let data;
       try {
-        response = await fetch('/api/analyze-url', {
+        data = await apiRequest('/api/analyze-url', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url: url.trim() }),
           signal: controller.signal
         });
       } finally {
         clearTimeout(timeoutId);
-      }
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || `Server returned ${response.status}`);
       }
 
       setUrlAssessment(data.assessment);
@@ -203,24 +185,17 @@ export default function App() {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
 
-      let response;
+      let data;
       try {
-        response = await fetch('/api/analyze-email', {
+        data = await apiRequest('/api/analyze-email', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: email.trim() }),
           signal: controller.signal
         });
       } finally {
         clearTimeout(timeoutId);
-      }
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || `Server returned ${response.status}`);
       }
 
       setEmailAssessment(data.assessment);

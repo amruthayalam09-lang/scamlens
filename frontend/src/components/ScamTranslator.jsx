@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiRequest } from '../utils/api';
 import {
   GlobeIcon,
   SparklesIcon,
@@ -59,24 +60,20 @@ export default function ScamTranslator({ onOpenInScanner }) {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-      const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: text,
-          targetLanguage: langCode
-        }),
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || `Server returned ${response.status}`);
+      let data;
+      try {
+        data = await apiRequest('/api/translate', {
+          method: 'POST',
+          body: JSON.stringify({
+            message: text,
+            targetLanguage: langCode
+          }),
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeoutId);
       }
 
       setResult(data);
@@ -397,3 +394,4 @@ export default function ScamTranslator({ onOpenInScanner }) {
     </section>
   );
 }
+

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { saveAnalysisRecord } from '../utils/historyStorage';
+import { apiRequest } from '../utils/api';
 import {
   UploadCloudIcon,
   ImageIcon,
@@ -193,24 +194,20 @@ export default function ScreenshotAnalyzer({ geminiConfigured }) {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 40000);
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-      const response = await fetch('/api/analyze-screenshot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          image: selectedImage.dataUrl,
-          mimeType: selectedImage.type || 'image/png'
-        }),
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || `Server returned status ${response.status}`);
+      let data;
+      try {
+        data = await apiRequest('/api/analyze-screenshot', {
+          method: 'POST',
+          body: JSON.stringify({
+            image: selectedImage.dataUrl,
+            mimeType: selectedImage.type || 'image/png'
+          }),
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeoutId);
       }
 
       setAssessment(data.assessment);
@@ -218,8 +215,8 @@ export default function ScreenshotAnalyzer({ geminiConfigured }) {
       // Record in local threat history
       saveAnalysisRecord({
         type: 'screenshot',
-        inputPreview: data.assessment.extractedText || 'Uploaded Screenshot Image',
-        fullInput: data.assessment.extractedText || 'Image OCR Analysis',
+        inputPreview: data.assessment?.extractedText || 'Uploaded Screenshot Image',
+        fullInput: data.assessment?.extractedText || 'Image OCR Analysis',
         assessment: data.assessment
       });
     } catch (err) {
