@@ -1,69 +1,61 @@
 import React from 'react';
-import { GlobeIcon, LockIcon, UnlockIcon, ShieldCheckIcon, AlertTriangleIcon } from './Icons';
+import { GlobeIcon, LockIcon, UnlockIcon, AlertTriangleIcon, CheckCircleIcon } from './Icons';
 
-/**
- * Safely displays analyzed URL metadata without rendering clickable links.
- */
-export default function UrlViewer({ assessment }) {
-  if (!assessment) return null;
+export default function UrlViewer({ urlAssessment }) {
+  if (!urlAssessment) return null;
 
-  const { url, hostname, protocol, mainDomain, subdomains, path } = assessment;
-  const isInsecureHttp = protocol === 'http:';
+  const url = urlAssessment.url || urlAssessment.inputUrl || '';
+  const hostname = urlAssessment.hostname || urlAssessment.parsed?.hostname || '';
+  const mainDomain = urlAssessment.mainDomain || urlAssessment.parsed?.registeredDomain || hostname;
+  const protocol = urlAssessment.protocol || (url.startsWith('https') ? 'https:' : 'http:');
+  const isHttps = protocol === 'https:' || urlAssessment.security?.isHttps;
+  const isSuspicious = urlAssessment.riskScore >= 25 || urlAssessment.isSuspicious;
 
   return (
-    <div className="dashboard-section-card">
-      <div className="section-card-header">
-        <div className="section-header-title">
-          <GlobeIcon size={18} className="section-icon" />
-          <h3 className="section-title">URL & Network Architecture Inspection</h3>
+    <div className="result-white-card">
+      <div className="result-card-header">
+        <div className="card-header-title-wrap">
+          <h4 className="result-card-heading">Link & Domain Inspection Breakdown</h4>
+          <p className="result-card-subheading">
+            Parsed host telemetry, protocol encryption, and destination root domain
+          </p>
         </div>
-        <span className="isolated-preview-badge">
-          <ShieldCheckIcon size={14} />
-          Isolated Preview — Hyperlink Execution Blocked
+        <span className={`clean-status-tag ${isSuspicious ? 'warning' : 'safe'}`}>
+          {isSuspicious ? <AlertTriangleIcon size={14} /> : <CheckCircleIcon size={14} />}
+          <span>{isSuspicious ? 'Suspicious Attributes Found' : 'Verified Domain Structure'}</span>
         </span>
       </div>
 
-      {/* Code Inspector Box */}
-      <div className="cyber-code-block">
-        <span className="code-lang-tag">RAW URL PAYLOAD</span>
-        <code className="inspected-url-code">{url}</code>
-      </div>
+      <div className="telemetry-info-grid">
+        <div className="telemetry-box">
+          <span className="telemetry-label">Inspected Link:</span>
+          <span className="telemetry-value-code">{url}</span>
+        </div>
 
-      {/* Grid of Network Parameters */}
-      <div className="telemetry-grid">
-        <div className="telemetry-item">
-          <span className="telemetry-label">Protocol Security</span>
-          <div className="telemetry-value-row">
-            {isInsecureHttp ? (
-              <span className="status-val danger">
-                <UnlockIcon size={16} /> HTTP (Unencrypted / High Risk)
+        <div className="telemetry-box">
+          <span className="telemetry-label">Registered Root Domain:</span>
+          <span className="telemetry-value-highlight">
+            {mainDomain || 'Unknown Host'}
+          </span>
+        </div>
+
+        <div className="telemetry-box">
+          <span className="telemetry-label">Full Hostname:</span>
+          <span className="telemetry-value-code">{hostname || '—'}</span>
+        </div>
+
+        <div className="telemetry-box">
+          <span className="telemetry-label">Protocol Security:</span>
+          <span className="telemetry-value-pill">
+            {isHttps ? (
+              <span className="badge-secure">
+                <LockIcon size={13} /> HTTPS Encrypted
               </span>
             ) : (
-              <span className="status-val secure">
-                <LockIcon size={16} /> HTTPS (TLS Encrypted Connection)
+              <span className="badge-insecure">
+                <UnlockIcon size={13} /> Unencrypted HTTP
               </span>
             )}
-          </div>
-        </div>
-
-        <div className="telemetry-item">
-          <span className="telemetry-label">Real Registered Domain</span>
-          <span className="status-val highlight-domain">
-            {mainDomain || hostname}
-          </span>
-        </div>
-
-        <div className="telemetry-item">
-          <span className="telemetry-label">Subdomain Prefixes</span>
-          <span className="status-val mono">
-            {subdomains && subdomains !== '(None)' ? subdomains : '(None)'}
-          </span>
-        </div>
-
-        <div className="telemetry-item">
-          <span className="telemetry-label">Resource Target Path</span>
-          <span className="status-val mono">
-            {path || '/'}
           </span>
         </div>
       </div>

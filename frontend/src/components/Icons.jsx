@@ -187,3 +187,4 @@ export function ChevronRightIcon({ className = "icon", size = 16 }) {
     </svg>
   );
 }
+

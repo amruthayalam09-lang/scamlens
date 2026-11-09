@@ -1,23 +1,25 @@
 import React from 'react';
-import { TerminalIcon, AlertTriangleIcon } from './Icons';
+import { TerminalIcon, AlertTriangleIcon, CheckCircleIcon } from './Icons';
 
 /**
- * Renders the analyzed text in a cybersecurity terminal view with exact suspicious phrases highlighted.
+ * Renders the analyzed text in a clean white card with exact suspicious phrases highlighted.
  */
 export default function HighlightViewer({ text, matches = [] }) {
   if (!text) return null;
 
   if (!matches || matches.length === 0) {
     return (
-      <div className="dashboard-section-card">
-        <div className="section-card-header">
-          <div className="section-header-title">
-            <TerminalIcon size={18} className="section-icon" />
-            <h3 className="section-title">Analyzed Message Text Payload</h3>
+      <div className="result-white-card">
+        <div className="result-card-header">
+          <div className="card-header-title-wrap">
+            <h4 className="result-card-heading">Analyzed Message Text</h4>
           </div>
-          <span className="section-header-badge clean">Zero Indicators Flagged</span>
+          <span className="clean-status-tag">
+            <CheckCircleIcon size={14} />
+            <span>Zero Suspicious Phrases Flagged</span>
+          </span>
         </div>
-        <div className="terminal-highlight-viewer clean">
+        <div className="highlighted-text-container clean-text">
           {text}
         </div>
       </div>
@@ -61,7 +63,7 @@ export default function HighlightViewer({ text, matches = [] }) {
     currentIndex = match.endIndex;
   });
 
-  // Remaining trailing text
+  // Remaining text after last match
   if (currentIndex < text.length) {
     segments.push({
       type: 'text',
@@ -71,33 +73,37 @@ export default function HighlightViewer({ text, matches = [] }) {
   }
 
   return (
-    <div className="dashboard-section-card">
-      <div className="section-card-header">
-        <div className="section-header-title">
-          <TerminalIcon size={18} className="section-icon" />
-          <h3 className="section-title">Detected Attack Vectors in Text</h3>
+    <div className="result-white-card">
+      <div className="result-card-header">
+        <div className="card-header-title-wrap">
+          <h4 className="result-card-heading">Visual Phrase Breakdown</h4>
+          <p className="result-card-subheading">
+            Suspicious triggers and psychological pressure phrases are highlighted below
+          </p>
         </div>
-        <span className="section-header-hint">
-          Hover over highlighted phrases to view category explanations
+        <span className="count-pill-badge">
+          {nonOverlapping.length} phrase{nonOverlapping.length === 1 ? '' : 's'} flagged
         </span>
       </div>
 
-      <div className="terminal-highlight-viewer">
+      <div className="highlighted-text-container">
         {segments.map((seg) => {
-          if (seg.type === 'highlight') {
-            const isHigh = seg.match.severity === 'high';
-            return (
-              <mark
-                key={seg.key}
-                className={`cyber-mark ${isHigh ? 'severity-high' : 'severity-medium'}`}
-                title={`[${seg.match.categoryLabel}] ${seg.match.explanation}`}
-              >
-                <span className="mark-content">{seg.content}</span>
-                <span className="mark-badge">{seg.match.categoryLabel}</span>
-              </mark>
-            );
+          if (seg.type === 'text') {
+            return <span key={seg.key}>{seg.content}</span>;
           }
-          return <span key={seg.key}>{seg.content}</span>;
+
+          const severityClass = seg.match.severity === 'high' ? 'high-risk-highlight' : 'medium-risk-highlight';
+
+          return (
+            <mark
+              key={seg.key}
+              className={`saas-mark ${severityClass}`}
+              title={`[${seg.match.categoryLabel}] ${seg.match.explanation}`}
+            >
+              {seg.content}
+              <span className="mark-badge-tag">{seg.match.categoryLabel}</span>
+            </mark>
+          );
         })}
       </div>
     </div>

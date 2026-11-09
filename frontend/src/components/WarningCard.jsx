@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangleIcon, LightbulbIcon, ShieldAlertIcon } from './Icons';
+import { AlertTriangleIcon, LightbulbIcon, ShieldAlertIcon, CheckCircleIcon } from './Icons';
 
 export default function WarningCard({
   categoryLabel,
@@ -11,22 +11,53 @@ export default function WarningCard({
   const isHigh = severity === 'high';
   const isLow = severity === 'low';
 
+  const severityColor = isHigh ? '#EF4444' : isLow ? '#16A34A' : '#F59E0B';
+  const severityBg = isHigh
+    ? 'rgba(239, 68, 68, 0.08)'
+    : isLow
+      ? 'rgba(22, 163, 74, 0.08)'
+      : 'rgba(245, 158, 11, 0.08)';
+  const severityBorder = isHigh
+    ? 'rgba(239, 68, 68, 0.25)'
+    : isLow
+      ? 'rgba(22, 163, 74, 0.25)'
+      : 'rgba(245, 158, 11, 0.25)';
+
   return (
-    <div className={`cyber-warning-card ${severity}`}>
-      <div className="card-top-bar">
-        <div className="warning-category-group">
-          <span className="warning-category-title">{categoryLabel || 'Warning Indicator'}</span>
+    <div className={`warning-item-card ${severity}`}>
+      <div className="warning-card-header">
+        <div className="warning-card-title-group">
+          <div
+            className="warning-icon-pill"
+            style={{ color: severityColor, backgroundColor: severityBg }}
+          >
+            {isHigh ? (
+              <ShieldAlertIcon size={16} />
+            ) : isLow ? (
+              <CheckCircleIcon size={16} />
+            ) : (
+              <AlertTriangleIcon size={16} />
+            )}
+          </div>
+          <span className="warning-category-name">{categoryLabel || 'Indicator Flagged'}</span>
         </div>
-        <span className={`severity-tag ${severity}`}>
-          <span className="severity-pulse"></span>
+
+        <span
+          className="warning-severity-badge"
+          style={{
+            color: severityColor,
+            backgroundColor: severityBg,
+            borderColor: severityBorder
+          }}
+        >
           {severity.toUpperCase()} RISK
         </span>
       </div>
 
       {phrase && (
-        <div className="flagged-phrase-box">
-          <span className="phrase-prefix">&gt; Flagged Clue:</span>
-          <code className="phrase-text">"{phrase}"</code>
+        <div className="flagged-snippet-box">
+          <span className="snippet-caption">Flagged Content:</span>
+          <p className="snippet-quote">"{phrase}"</p>
         </div>
       )}
 
@@ -35,11 +66,13 @@ export default function WarningCard({
       </p>
 
       {recommendation && (
-        <div className="warning-remedy-box">
-          <LightbulbIcon size={16} className="remedy-icon" />
-          <div className="remedy-content">
-            <span className="remedy-label">Defensive Action: </span>
-            <span className="remedy-text">{recommendation}</span>
+        <div className="warning-action-tip">
+          <div className="action-tip-icon">
+            <LightbulbIcon size={15} />
+          </div>
+          <div className="action-tip-content">
+            <strong className="action-tip-label">Recommended Countermeasure: </strong>
+            <span className="action-tip-text">{recommendation}</span>
           </div>
         </div>
       )}

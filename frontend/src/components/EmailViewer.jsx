@@ -1,86 +1,60 @@
 import React from 'react';
-import { MailIcon, ShieldCheckIcon, AlertTriangleIcon, CheckCircleIcon } from './Icons';
+import { MailIcon, AlertTriangleIcon, CheckCircleIcon } from './Icons';
 
-/**
- * Safely displays analyzed email metadata without clickable mailto links.
- */
-export default function EmailViewer({ assessment }) {
-  if (!assessment) return null;
+export default function EmailViewer({ emailAssessment }) {
+  if (!emailAssessment) return null;
 
-  const {
-    email,
-    displayName,
-    localPart,
-    domain,
-    mainDomain,
-    isFreeProvider,
-    isDisposable
-  } = assessment;
+  const email = emailAssessment.email || emailAssessment.inputEmail || '';
+  const domain = emailAssessment.domain || emailAssessment.mainDomain || emailAssessment.parsed?.domain || '';
+  const localPart = emailAssessment.localPart || emailAssessment.parsed?.user || '';
+  const isDisposable = Boolean(emailAssessment.isDisposable || emailAssessment.parsed?.isDisposable);
+  const isFreeProvider = Boolean(emailAssessment.isFreeProvider || emailAssessment.parsed?.isFreeWebmail);
+  const isSuspicious = emailAssessment.riskScore >= 25 || emailAssessment.isSuspicious;
 
   return (
-    <div className="dashboard-section-card">
-      <div className="section-card-header">
-        <div className="section-header-title">
-          <MailIcon size={18} className="section-icon" />
-          <h3 className="section-title">Sender Identity & Mailbox Architecture</h3>
+    <div className="result-white-card">
+      <div className="result-card-header">
+        <div className="card-header-title-wrap">
+          <h4 className="result-card-heading">Sender Identity & Domain Audit</h4>
+          <p className="result-card-subheading">
+            Analyzed mailbox user, sending host, and disposable provider status
+          </p>
         </div>
-        <span className="isolated-preview-badge">
-          <ShieldCheckIcon size={14} />
-          Isolated Audit — No Ping / Handshake Sent
+        <span className={`clean-status-tag ${isSuspicious ? 'warning' : 'safe'}`}>
+          {isSuspicious ? <AlertTriangleIcon size={14} /> : <CheckCircleIcon size={14} />}
+          <span>{isSuspicious ? 'Impersonation Risk' : 'Standard Mailbox Format'}</span>
         </span>
       </div>
 
-      <div className="cyber-code-block">
-        <span className="code-lang-tag">SENDER HEADER LINE</span>
-        <div className="sender-raw-preview">
-          {displayName && displayName !== '(None)' && (
-            <span className="sender-display-name">"{displayName}"</span>
-          )}
-          <code className="inspected-email-code">&lt;{email}&gt;</code>
-        </div>
-      </div>
-
-      <div className="telemetry-grid">
-        <div className="telemetry-item">
-          <span className="telemetry-label">Sender Account / Mailbox</span>
-          <span className="status-val mono">{localPart}</span>
+      <div className="telemetry-info-grid">
+        <div className="telemetry-box">
+          <span className="telemetry-label">Audited Sender Address:</span>
+          <span className="telemetry-value-code">{email}</span>
         </div>
 
-        <div className="telemetry-item">
-          <span className="telemetry-label">Domain Host / MX Provider</span>
-          <span className="status-val highlight-domain">
-            {mainDomain && mainDomain !== domain ? `${domain} (Registered: ${mainDomain})` : domain}
+        <div className="telemetry-box">
+          <span className="telemetry-label">Sender Domain:</span>
+          <span className="telemetry-value-highlight">
+            {domain || '—'}
           </span>
         </div>
 
-        <div className="telemetry-item">
-          <span className="telemetry-label">Mail Provider Classification</span>
-          <div className="telemetry-value-row">
-            {isFreeProvider ? (
-              <span className="status-val warning">
-                <AlertTriangleIcon size={16} /> Free Webmail (Gmail/Yahoo)
-              </span>
-            ) : (
-              <span className="status-val secure">
-                <CheckCircleIcon size={16} /> Custom Corporate Domain
-              </span>
-            )}
-          </div>
+        <div className="telemetry-box">
+          <span className="telemetry-label">Mailbox Account:</span>
+          <span className="telemetry-value-code">{localPart || '—'}</span>
         </div>
 
-        <div className="telemetry-item">
-          <span className="telemetry-label">Reputation & Longevity</span>
-          <div className="telemetry-value-row">
+        <div className="telemetry-box">
+          <span className="telemetry-label">Provider Type:</span>
+          <span className="telemetry-value-pill">
             {isDisposable ? (
-              <span className="status-val danger">
-                <AlertTriangleIcon size={16} /> Disposable Throwaway Inbox
-              </span>
+              <span className="badge-insecure">Disposable / Temp Mail</span>
+            ) : isFreeProvider ? (
+              <span className="badge-neutral">Public Webmail (e.g. Gmail/Yahoo)</span>
             ) : (
-              <span className="status-val secure">
-                <CheckCircleIcon size={16} /> Established Mail Provider
-              </span>
+              <span className="badge-secure">Custom / Corporate Domain</span>
             )}
-          </div>
+          </span>
         </div>
       </div>
     </div>

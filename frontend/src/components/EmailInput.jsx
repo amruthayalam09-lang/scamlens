@@ -1,31 +1,26 @@
 import React from 'react';
-import { MailIcon, SearchIcon, TrashIcon, CopyIcon, ZapIcon } from './Icons';
+import { MailIcon, SearchIcon, TrashIcon, CopyIcon, ZapIcon, SparklesIcon } from './Icons';
 
 const EMAIL_PRESETS = [
   {
-    title: '💳 PayPal on Free Gmail',
-    tag: 'FREE-WEBMAIL',
-    email: 'PayPal Security Alert <paypal-security-update@gmail.com>'
+    title: '✉️ PayPal via Free Webmail',
+    tag: 'Webmail Spoof',
+    email: 'paypal-security-alert@gmail.com'
   },
   {
-    title: '🛒 Amaz0n Lookalike Domain',
-    tag: 'TYPOSQUATTING',
-    email: 'Amazon Support <service-billing@amaz0n-services.xyz>'
+    title: '🛒 Amaz0n Typosquatting Domain',
+    tag: 'Typosquatting',
+    email: 'support@amaz0n-security-update.com'
   },
   {
-    title: '🏦 Fake SBI Team on Yahoo',
-    tag: 'FREE-WEBMAIL',
-    email: 'SBI Verification Team <sbi.kyc.verification.desk@yahoo.com>'
+    title: '⏳ Disposable Temp Mailbox',
+    tag: 'Temp Mail',
+    email: 'agent-verify@tempmail.com'
   },
   {
-    title: '📦 Disposable Mailbox',
-    tag: 'TEMP-MAIL',
-    email: 'Courier Notice <package-tracking-alert@mailinator.com>'
-  },
-  {
-    title: '🌐 Official Google Security (Safe)',
-    tag: 'BENIGN',
-    email: 'Google Security <no-reply@accounts.google.com>'
+    title: '🔒 Genuine Microsoft (Safe)',
+    tag: 'Official Mail',
+    email: 'security@accountprotection.microsoft.com'
   }
 ];
 
@@ -64,110 +59,106 @@ export default function EmailInput({
   };
 
   return (
-    <div className="scanner-card">
-      <div className="scanner-header">
-        <div className="terminal-controls">
-          <span className="control-dot red"></span>
-          <span className="control-dot yellow"></span>
-          <span className="control-dot green"></span>
-          <span className="terminal-title">scamlens://threat-inspector/email-sender</span>
-        </div>
-        <div className="scanner-meta-status">
-          <span className="live-status-pill">
-            <span className="pulse-dot"></span>
-            SENDER SPOOFING DETECTOR
-          </span>
-        </div>
-      </div>
-
-      <div className="presets-container">
-        <div className="presets-label-row">
+    <div className="input-card-container">
+      {/* Sample Scenarios */}
+      <div className="presets-wrapper">
+        <div className="presets-header">
           <span className="presets-label">
             <ZapIcon size={14} className="accent-icon" />
-            Common Impersonation Vectors:
+            Try a sample sender address:
           </span>
-          <span className="presets-hint">Click a deceptive sender pattern to test:</span>
+          <span className="presets-hint">Audit sender domain authenticity and spoofing</span>
         </div>
-        <div className="preset-chips-grid">
+        <div className="preset-chips-list">
           {EMAIL_PRESETS.map((preset, idx) => (
             <button
               key={idx}
               type="button"
-              className={`preset-chip ${preset.tag.toLowerCase()}`}
+              className="preset-chip-btn"
               onClick={() => handlePresetClick(preset.email)}
-              title="Load this sample sender"
+              title="Load sample email"
             >
-              <span className="preset-chip-title">{preset.title}</span>
-              <span className="preset-chip-tag">{preset.tag}</span>
+              <span className="preset-chip-text">{preset.title}</span>
+              <span className="preset-chip-badge">{preset.tag}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="input-frame">
-        <div className="cyber-single-input-row">
-          <div className="input-icon-box">
-            <MailIcon size={18} className="input-lead-icon" />
-          </div>
-          <input
-            type="text"
-            className="cyber-text-input"
-            placeholder="Paste sender email address or full header (e.g. PayPal Alert <security@gmail.com>)..."
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={isLoading}
-          />
-          {email.length > 0 && (
-            <button
-              type="button"
-              className="input-inline-clear"
-              onClick={handleClear}
-              title="Clear input"
-            >
-              <TrashIcon size={16} />
-            </button>
-          )}
+      {/* Single-line Email Input */}
+      <div className="single-input-row">
+        <div className="input-prefix-icon">
+          <MailIcon size={18} />
         </div>
-
-        <div className="input-toolbar">
-          <div className="char-counter">
-            <span className="safe-preview-tag">🔒 Zero-transmission inspection — No emails sent or pinged</span>
-          </div>
-          <div className="toolbar-actions">
-            <button
-              type="button"
-              className="tool-btn paste-btn"
-              onClick={handlePasteClipboard}
-              disabled={isLoading}
-            >
-              <CopyIcon size={14} />
-              <span>Paste Sender</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="scanner-action-footer">
+        <input
+          type="email"
+          className="clean-text-input"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="support@service-update.com or paste sender address..."
+          disabled={isLoading}
+        />
+        {email && (
+          <button
+            type="button"
+            className="input-clear-icon-btn"
+            onClick={handleClear}
+            title="Clear email"
+          >
+            ×
+          </button>
+        )}
         <button
           type="button"
-          className={`cyber-analyze-btn ${isLoading ? 'loading' : ''}`}
-          onClick={onAnalyze}
-          disabled={isLoading || !email.trim()}
+          className="tool-btn inside-input"
+          onClick={handlePasteClipboard}
+          title="Paste from clipboard"
         >
-          {isLoading ? (
-            <>
-              <span className="cyber-spinner"></span>
-              <span className="btn-text">Verifying Brand Authenticity & Mail Infrastructure...</span>
-            </>
-          ) : (
-            <>
-              <SearchIcon size={20} className="btn-icon" />
-              <span className="btn-text">Analyse Sender & Domain Integrity</span>
-              <span className="btn-shine"></span>
-            </>
-          )}
+          <CopyIcon size={14} />
+          <span>Paste</span>
         </button>
+      </div>
+
+      {/* Bottom Action Footer */}
+      <div className="input-action-footer">
+        <div className="input-meta-info">
+          <span className="privacy-pill">
+            <span className="privacy-dot"></span>
+            Zero-Transmission Audit: Verified without sending any email or notification
+          </span>
+        </div>
+
+        <div className="button-group">
+          <button
+            type="button"
+            className="btn-clear"
+            onClick={handleClear}
+            disabled={!email && !isLoading}
+          >
+            <TrashIcon size={15} />
+            <span>Clear</span>
+          </button>
+
+          <button
+            type="button"
+            className="btn-primary-analyse"
+            onClick={onAnalyze}
+            disabled={isLoading || !email.trim()}
+          >
+            {isLoading ? (
+              <>
+                <span className="spinner-dot"></span>
+                <span>Auditing Sender...</span>
+              </>
+            ) : (
+              <>
+                <SparklesIcon size={16} />
+                <span>Audit Sender</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

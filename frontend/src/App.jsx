@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
+import HeroIllustration from './components/HeroIllustration';
 import MessageInput from './components/MessageInput';
 import LinkInput from './components/LinkInput';
 import EmailInput from './components/EmailInput';
@@ -21,8 +22,8 @@ import {
   MailIcon,
   MessageSquareIcon,
   CpuIcon,
-  TerminalIcon,
-  SparklesIcon
+  SparklesIcon,
+  ChevronRightIcon
 } from './components/Icons';
 
 export default function App() {
@@ -116,7 +117,7 @@ export default function App() {
       console.error('Analysis error:', err);
       setMessageAssessment(null);
       if (err.name === 'AbortError') {
-        setError('The analysis timed out after 30 seconds. The AI service may be overloaded — please try again.');
+        setError('The analysis timed out. The server or AI service took too long to respond — please try again.');
       } else {
         setError(err.message || 'Could not connect to the backend server. Please make sure the backend is running.');
       }
@@ -159,7 +160,7 @@ export default function App() {
       console.error('URL analysis error:', err);
       setUrlAssessment(null);
       if (err.name === 'AbortError') {
-        setError('The link analysis timed out. Please check that the backend server is reachable.');
+        setError('The URL analysis timed out. Please check that the backend server is reachable.');
       } else {
         setError(err.message || 'Could not connect to the backend server. Please make sure the backend is running.');
       }
@@ -265,361 +266,412 @@ export default function App() {
     }
   }
 
-  // Count embedded links or emails found inside scanned message
-  const embeddedUrlCount = messageAssessment?.ruleFindings?.detectedUrls?.length || 0;
-  const embeddedEmailCount = messageAssessment?.ruleFindings?.detectedEmails?.length || 0;
+  const scrollToScanner = () => {
+    const el = document.getElementById('scanner');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const scrollToHowItWorks = () => {
+    const el = document.getElementById('how-it-works');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
-    <div className="scamlens-app">
-      {/* Dynamic Background Cyber Lighting */}
-      <div className="cyber-ambient-grid"></div>
-      <div className="cyber-glow-top-left"></div>
-      <div className="cyber-glow-top-right"></div>
-      <div className="cyber-glow-center"></div>
-
-      {/* Top Navbar */}
+    <div className="scamlens-root">
+      {/* 1. Navbar */}
       <Header
         backendStatus={backendStatus}
         geminiConfigured={geminiConfigured}
+        onScanClick={scrollToScanner}
       />
 
-      <main className="main-content-layout">
-        {/* Requirement 3: Impressive Homepage with heading "Think Before You Trust." */}
+      <main className="page-content">
+        {/* 2. Hero Section: Soft Lavender Background, Large Heading, Subtitle, Purple CTA, Illustration */}
         <section className="hero-section">
-          <div className="hero-pill-badge">
-            <span className="pill-radar-dot"></span>
-            <span className="pill-text">AI SCAM INTELLIGENCE & SOCIAL ENGINEERING DEFENSE</span>
-          </div>
+          <div className="hero-container">
+            <div className="hero-text-col">
+              <div className="hero-tag-pill">
+                <span className="pill-dot-purple"></span>
+                <span className="pill-tag-text">AI-POWERED SCAM PATTERN DETECTION</span>
+              </div>
 
-          <h1 className="hero-headline">
-            Think Before <span className="headline-gradient">You Trust.</span>
-          </h1>
+              <h1 className="hero-title">
+                Think Before <span className="hero-title-highlight">You Trust.</span>
+              </h1>
 
-          <p className="hero-tagline">
-            Social engineers exploit urgency, fear, and fake authority to steal OTPs, credentials, and savings.
-            ScamLens deconstructs suspicious messages, phishing URLs, and spoofed senders in real time — explaining hidden psychological manipulation in plain English.
-          </p>
+              <p className="hero-subtitle">
+                ScamLens is an intelligent scam pattern recognition engine designed for ordinary people.
+                Deconstruct suspicious messages, phishing links, and fake senders in real time — understanding
+                psychological manipulation before you lose money or credentials.
+              </p>
 
-          {/* Cyber Trust & Feature Pillars */}
-          <div className="trust-metrics-strip">
-            <div className="trust-metric-item">
-              <ZapIcon size={16} className="metric-icon" />
-              <div className="metric-text-wrap">
-                <span className="metric-title">0ms Pattern Match</span>
-                <span className="metric-subtitle">Instant Offline Heuristics</span>
+              <div className="hero-cta-group">
+                <button
+                  type="button"
+                  className="btn-hero-primary"
+                  onClick={scrollToScanner}
+                >
+                  <SparklesIcon size={18} />
+                  <span>Try Live Scanner</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-hero-secondary"
+                  onClick={scrollToHowItWorks}
+                >
+                  <span>How it Works</span>
+                  <ChevronRightIcon size={16} />
+                </button>
+              </div>
+
+              {/* Trust Metric Badges */}
+              <div className="hero-trust-row">
+                <div className="trust-pill-item">
+                  <ZapIcon size={15} className="trust-icon" />
+                  <span>Instant Offline Heuristics</span>
+                </div>
+                <div className="trust-pill-item">
+                  <CpuIcon size={15} className="trust-icon" />
+                  <span>Gemini 2.0 Flash AI</span>
+                </div>
+                <div className="trust-pill-item">
+                  <LockIcon size={15} className="trust-icon" />
+                  <span>100% Privacy-First</span>
+                </div>
               </div>
             </div>
 
-            <div className="metric-divider"></div>
-
-            <div className="trust-metric-item">
-              <CpuIcon size={16} className="metric-icon" />
-              <div className="metric-text-wrap">
-                <span className="metric-title">Gemini 2.0 Flash</span>
-                <span className="metric-subtitle">Deep Deception Reasoning</span>
-              </div>
-            </div>
-
-            <div className="metric-divider"></div>
-
-            <div className="trust-metric-item">
-              <LockIcon size={16} className="metric-icon" />
-              <div className="metric-text-wrap">
-                <span className="metric-title">100% Privacy-First</span>
-                <span className="metric-subtitle">Zero User Data Stored</span>
-              </div>
-            </div>
-
-            <div className="metric-divider"></div>
-
-            <div className="trust-metric-item">
-              <TerminalIcon size={16} className="metric-icon" />
-              <div className="metric-text-wrap">
-                <span className="metric-title">Multi-Vector Analysis</span>
-                <span className="metric-subtitle">SMS, Links & Email Senders</span>
-              </div>
+            {/* AI / Cybersecurity Illustration */}
+            <div className="hero-illustration-col">
+              <HeroIllustration />
             </div>
           </div>
         </section>
 
-        {/* Feature Mode Tab Switcher */}
-        <div className="mode-switcher-container">
-          <div className="mode-switcher-nav" role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'message'}
-              className={`mode-tab-btn ${activeTab === 'message' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('message'); setError(null); }}
-            >
-              <MessageSquareIcon size={18} className="tab-icon" />
-              <span className="tab-label">Message / SMS Scanner</span>
-              <span className="tab-tag-badge">HEURISTIC</span>
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'url'}
-              className={`mode-tab-btn ${activeTab === 'url' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('url'); setError(null); }}
-            >
-              <GlobeIcon size={18} className="tab-icon" />
-              <span className="tab-label">Link & Domain Inspector</span>
-              <span className="tab-tag-badge cyan">URL</span>
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'email'}
-              className={`mode-tab-btn ${activeTab === 'email' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('email'); setError(null); }}
-            >
-              <MailIcon size={18} className="tab-icon" />
-              <span className="tab-label">Email & Sender Auditor</span>
-              <span className="tab-tag-badge purple">SENDER</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Active Input Scanner Section */}
-        <section className="scanner-section">
-          {activeTab === 'message' && (
-            <MessageInput
-              message={message}
-              setMessage={setMessage}
-              onAnalyze={handleAnalyzeMessage}
-              isLoading={isLoading}
-              onClear={handleClearMessage}
-            />
-          )}
-
-          {activeTab === 'url' && (
-            <LinkInput
-              url={url}
-              setUrl={setUrl}
-              onAnalyze={handleAnalyzeUrl}
-              isLoading={isLoading}
-              onClear={handleClearUrl}
-            />
-          )}
-
-          {activeTab === 'email' && (
-            <EmailInput
-              email={email}
-              setEmail={setEmail}
-              onAnalyze={handleAnalyzeEmail}
-              isLoading={isLoading}
-              onClear={handleClearEmail}
-            />
-          )}
-        </section>
-
-        {/* Optional Gemini AI Key Banner (only on message tab if not yet added) */}
-        {!geminiConfigured && activeTab === 'message' && (
-          <ApiKeyNotice
-            setupInstructions={assessment?.aiAnalysis?.setupInstructions}
-          />
-        )}
-
-        {/* Error Notification Alert */}
-        {error && (
-          <div className="cyber-error-alert">
-            <div className="alert-icon-box">
-              <AlertTriangleIcon size={22} className="alert-error-icon" />
-            </div>
-            <div className="alert-content-box">
-              <strong className="alert-error-title">Analysis Engine Warning:</strong>
-              <p className="alert-error-message">{error}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Informational Guidance (shown before analysis) */}
-        {!assessment && !isLoading && !error && (
-          <section className="architecture-preview-card">
-            <div className="preview-card-header">
-              <div className="preview-title-wrap">
-                <SparklesIcon size={20} className="preview-icon" />
-                <h3 className="preview-title">
-                  {activeTab === 'message' && 'How ScamLens Triages Suspicious Messages'}
-                  {activeTab === 'url' && 'How ScamLens Deconstructs Phishing Websites'}
-                  {activeTab === 'email' && 'How ScamLens Unmasks Fake Email Senders'}
-                </h3>
-              </div>
-              <span className="preview-mode-tag">CYBERSECURITY FRAMEWORK</span>
+        {/* 3. Scanner Section */}
+        <section id="scanner" className="scanner-section">
+          <div className="section-container">
+            <div className="section-header-center">
+              <span className="section-eyebrow">LIVE DEFENSE CONSOLE</span>
+              <h2 className="section-heading">Inspect Suspicious Content</h2>
+              <p className="section-subheading">
+                Paste any SMS, WhatsApp alert, web link, or sender email to analyze deception patterns.
+              </p>
             </div>
 
-            <p className="preview-description">
-              {activeTab === 'message' && 'Inspect messages before you transfer funds, share OTPs, or click links sent by unknown contacts:'}
-              {activeTab === 'url' && 'Inspect web links, banking redirects, and typosquatted domains in a secure isolated environment:'}
-              {activeTab === 'email' && 'Detect free webmail impersonation, lookalike domains, and disposable spam infrastructure:'}
-            </p>
+            {/* Mode Tab Switcher */}
+            <div className="scanner-tabs-bar">
+              <button
+                type="button"
+                className={`tab-btn ${activeTab === 'message' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('message'); setError(null); }}
+              >
+                <MessageSquareIcon size={17} />
+                <span>Message & SMS Scanner</span>
+              </button>
 
-            <div className="workflow-steps-grid">
-              <div className="workflow-step-card">
-                <div className="step-num-pill">01</div>
-                <h4 className="workflow-step-title">
-                  {activeTab === 'message' && 'Payload Ingestion'}
-                  {activeTab === 'url' && 'Domain Resolution'}
-                  {activeTab === 'email' && 'Header Inspection'}
-                </h4>
-                <p className="workflow-step-desc">
-                  {activeTab === 'message' && 'Paste any SMS, WhatsApp chat, fake job offer, or lottery claim into the scanner.'}
-                  {activeTab === 'url' && 'Paste any shortened bit.ly URL, banking portal, or suspicious customer care link.'}
-                  {activeTab === 'email' && 'Paste any sender address or full header line (e.g. PayPal Alert <support@gmail.com>).'}
-                </p>
-              </div>
+              <button
+                type="button"
+                className={`tab-btn ${activeTab === 'url' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('url'); setError(null); }}
+              >
+                <GlobeIcon size={17} />
+                <span>Link & Domain Inspector</span>
+              </button>
 
-              <div className="workflow-step-card">
-                <div className="step-num-pill">02</div>
-                <h4 className="workflow-step-title">Heuristic Scanning</h4>
-                <p className="workflow-step-desc">
-                  {activeTab === 'message' && 'Instant pattern matching searches for OTP demands, remote desktop tools, and panic keywords.'}
-                  {activeTab === 'url' && 'Checks for typosquatting, deceptive brand subdomains, unencrypted HTTP, and raw IP addresses.'}
-                  {activeTab === 'email' && 'Verifies lookalike company domains, free webmail abuse, and disposable mailboxes.'}
-                </p>
-              </div>
-
-              <div className="workflow-step-card">
-                <div className="step-num-pill">03</div>
-                <h4 className="workflow-step-title">Threat Synthesis</h4>
-                <p className="workflow-step-desc">
-                  Combines heuristic findings with Google Gemini AI contextual evaluation to produce a 0–100 risk score and step-by-step action plan.
-                </p>
-              </div>
+              <button
+                type="button"
+                className={`tab-btn ${activeTab === 'email' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('email'); setError(null); }}
+              >
+                <MailIcon size={17} />
+                <span>Email & Sender Auditor</span>
+              </button>
             </div>
-          </section>
-        )}
 
-        {/* Results Dashboard (Shown when analysis completes) */}
-        {assessment && (
-          <section className="results-dashboard-container">
-            {/* 1. Risk Meter Overview Dashboard Card */}
-            <RiskMeter assessment={assessment} />
+            {/* Active Input Container */}
+            <div className="scanner-input-container">
+              {activeTab === 'message' && (
+                <MessageInput
+                  message={message}
+                  setMessage={setMessage}
+                  onAnalyze={handleAnalyzeMessage}
+                  isLoading={isLoading}
+                  onClear={handleClearMessage}
+                />
+              )}
 
-            {/* Embedded Link/Email Notification Pills (if scanned message contained links/emails) */}
-            {activeTab === 'message' && (embeddedUrlCount > 0 || embeddedEmailCount > 0) && (
-              <div className="embedded-telemetry-strip">
-                {embeddedUrlCount > 0 && (
-                  <div className="embedded-pill url">
-                    <GlobeIcon size={15} />
-                    <span>{embeddedUrlCount} Embedded URL{embeddedUrlCount > 1 ? 's' : ''} Detected & Flagged</span>
-                  </div>
-                )}
-                {embeddedEmailCount > 0 && (
-                  <div className="embedded-pill email">
-                    <MailIcon size={15} />
-                    <span>{embeddedEmailCount} Embedded Email Address{embeddedEmailCount > 1 ? 'es' : ''} Detected & Flagged</span>
-                  </div>
-                )}
-              </div>
-            )}
+              {activeTab === 'url' && (
+                <LinkInput
+                  url={url}
+                  setUrl={setUrl}
+                  onAnalyze={handleAnalyzeUrl}
+                  isLoading={isLoading}
+                  onClear={handleClearUrl}
+                />
+              )}
 
-            {/* 2. Message Highlight Viewer, URL Inspector, or Email Breakdown */}
-            {activeTab === 'message' && (
-              <HighlightViewer
-                text={lastAnalyzedText}
-                matches={assessment.ruleFindings?.matches || []}
+              {activeTab === 'email' && (
+                <EmailInput
+                  email={email}
+                  setEmail={setEmail}
+                  onAnalyze={handleAnalyzeEmail}
+                  isLoading={isLoading}
+                  onClear={handleClearEmail}
+                />
+              )}
+            </div>
+
+            {/* Optional Gemini AI Key Banner (if not yet configured) */}
+            {!geminiConfigured && activeTab === 'message' && (
+              <ApiKeyNotice
+                setupInstructions={assessment?.aiAnalysis?.setupInstructions}
               />
             )}
 
-            {activeTab === 'url' && (
-              <UrlViewer assessment={assessment} />
-            )}
-
-            {activeTab === 'email' && (
-              <EmailViewer assessment={assessment} />
-            )}
-
-            {/* 3. Reassurance Card when Zero Red Flags are Detected */}
-            {warningCards.length === 0 && (
-              <div className="clean-verdict-card">
-                <div className="clean-icon-wrap">
-                  <ShieldCheckIcon size={26} className="clean-icon" />
-                </div>
-                <div className="clean-text-wrap">
-                  <h4 className="clean-title">
-                    {activeTab === 'message' && 'No Obvious Scam Indicators Detected'}
-                    {activeTab === 'url' && 'No Deceptive Link Indicators Detected'}
-                    {activeTab === 'email' && 'No Deceptive Sender Indicators Detected'}
-                  </h4>
-                  <p className="clean-desc">
-                    {activeTab === 'message' && 'This message does not appear to contain known social engineering keywords, advance-payment demands, artificial urgency, or OTP harvesting patterns. Always exercise standard caution with unsolicited contacts.'}
-                    {activeTab === 'url' && 'This web address does not match known typosquatting patterns, deceptive subdomains, raw IP hosts, or high-risk TLD tricks. Always verify the domain name matches the official verified site.'}
-                    {activeTab === 'email' && 'This sender email does not exhibit known free webmail impersonation, throwaway inboxes, or lookalike typosquatting. Always exercise normal care with unsolicited attachments.'}
-                  </p>
+            {/* Error Notification Alert */}
+            {error && (
+              <div className="light-error-alert">
+                <AlertTriangleIcon size={20} className="alert-icon" />
+                <div className="alert-text-wrap">
+                  <strong>Notice:</strong> {error}
                 </div>
               </div>
             )}
 
-            {/* 4. Warning Sign Cards Grid */}
-            {warningCards.length > 0 && (
-              <div className="dashboard-section-card">
-                <div className="section-card-header">
-                  <div className="section-header-title">
-                    <ShieldAlertIcon size={20} className="section-icon crimson" />
-                    <h3 className="section-title">Detected Deception Patterns & Warning Signs</h3>
-                  </div>
-                  <span className="flagged-count-badge">
-                    {warningCards.length} Vector{warningCards.length > 1 ? 's' : ''} Flagged
+            {/* 4. Analysis Results Section */}
+            {assessment && !isLoading && (
+              <div className="results-wrapper">
+                <div className="results-header-row">
+                  <h3 className="results-title">Analysis Assessment Report</h3>
+                  <span className="results-timestamp">
+                    Inspected just now • {activeTab.toUpperCase()} PAYLOAD
                   </span>
                 </div>
 
-                <p className="section-subtitle">
-                  Here is why each flagged clue, phrase, or infrastructure element raises concern:
-                </p>
+                {/* Prominent Risk Score Card */}
+                <RiskMeter assessment={assessment} />
 
-                <div className="warning-cards-cyber-grid">
-                  {warningCards.map((card) => (
-                    <WarningCard
-                      key={card.id}
-                      categoryLabel={card.categoryLabel}
-                      phrase={card.phrase}
-                      explanation={card.explanation}
-                      severity={card.severity}
-                      recommendation={card.recommendation}
-                    />
-                  ))}
-                </div>
+                {/* Visual Highlight Viewer for message tab */}
+                {activeTab === 'message' && (
+                  <HighlightViewer
+                    text={lastAnalyzedText || message}
+                    matches={assessment.ruleFindings?.matches || []}
+                  />
+                )}
+
+                {/* Link telemetry card for URL tab */}
+                {activeTab === 'url' && (
+                  <UrlViewer urlAssessment={assessment} />
+                )}
+
+                {/* Email telemetry card for Email tab */}
+                {activeTab === 'email' && (
+                  <EmailViewer emailAssessment={assessment} />
+                )}
+
+                {/* Warning Cards Grid (Separate White Cards) */}
+                {warningCards.length > 0 && (
+                  <div className="warning-cards-section">
+                    <div className="section-label-row">
+                      <h4 className="cards-group-title">
+                        Detected Deception Triggers ({warningCards.length})
+                      </h4>
+                      <span className="cards-group-hint">
+                        Detailed breakdown of psychological tactics and suspicious patterns
+                      </span>
+                    </div>
+
+                    <div className="warning-cards-grid">
+                      {warningCards.map((warn) => (
+                        <WarningCard
+                          key={warn.id}
+                          categoryLabel={warn.categoryLabel}
+                          phrase={warn.phrase}
+                          explanation={warn.explanation}
+                          severity={warn.severity}
+                          recommendation={warn.recommendation}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Reassurance Card when 0 warnings */}
+                {warningCards.length === 0 && (
+                  <div className="reassurance-card">
+                    <div className="reassurance-icon">
+                      <ShieldCheckIcon size={24} />
+                    </div>
+                    <div className="reassurance-text">
+                      <h4>Clean Verification Verdict</h4>
+                      <p>
+                        No high-pressure urgency, credential theft, fake authority, or known deception keywords
+                        were identified. Always verify unexpected payment requests directly with the sender.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Safety Action Steps Checklist */}
+                <SafetyChecklist
+                  recommendations={assessment.recommendations || []}
+                />
+
+                {/* Ethical Disclaimer */}
+                <Disclaimer text={assessment.disclaimer} />
               </div>
             )}
+          </div>
+        </section>
 
-            {/* 5. Step-by-Step Action Checklist */}
-            <SafetyChecklist
-              recommendations={assessment.personalizedSafetyRecommendations}
-            />
+        {/* 5. How It Works Section */}
+        <section id="how-it-works" className="how-it-works-section">
+          <div className="section-container">
+            <div className="section-header-center">
+              <span className="section-eyebrow">SIMPLE 3-STEP DEFENSE</span>
+              <h2 className="section-heading">How ScamLens Protects You</h2>
+              <p className="section-subheading">
+                Designed specifically for everyday people to quickly verify suspicious messages before taking action.
+              </p>
+            </div>
 
-            {/* 6. Legal & Advisory Disclaimer */}
-            <Disclaimer text={assessment.disclaimer} />
-          </section>
-        )}
+            <div className="steps-cards-grid">
+              <div className="step-feature-card">
+                <div className="step-card-num">01</div>
+                <div className="step-card-icon-box">
+                  <MessageSquareIcon size={24} />
+                </div>
+                <h3 className="step-card-title">Paste Suspicious Content</h3>
+                <p className="step-card-desc">
+                  Copy any confusing text message, WhatsApp forward, bank OTP alert, job offer, or email link into the scanner.
+                </p>
+              </div>
+
+              <div className="step-feature-card">
+                <div className="step-card-num">02</div>
+                <div className="step-card-icon-box">
+                  <CpuIcon size={24} />
+                </div>
+                <h3 className="step-card-title">Dual-Engine Detection</h3>
+                <p className="step-card-desc">
+                  Our offline pattern rule engine matches known fraud keywords in 0ms, while Google Gemini 2.0 analyzes subtle psychological manipulation.
+                </p>
+              </div>
+
+              <div className="step-feature-card">
+                <div className="step-card-num">03</div>
+                <div className="step-card-icon-box">
+                  <ShieldCheckIcon size={24} />
+                </div>
+                <h3 className="step-card-title">Plain-English Guidance</h3>
+                <p className="step-card-desc">
+                  Receive a clear 0-100 risk score, highlighted deceitful phrases, and simple defensive countermeasures you can follow immediately.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 6. Features Grid Section */}
+        <section id="features" className="features-section">
+          <div className="section-container">
+            <div className="section-header-center">
+              <span className="section-eyebrow">WHY SCAMLENS</span>
+              <h2 className="section-heading">Engineered for Accuracy & Privacy</h2>
+              <p className="section-subheading">
+                Combining speed, artificial intelligence, and privacy-first principles.
+              </p>
+            </div>
+
+            <div className="features-grid">
+              <div className="feature-item-card">
+                <div className="feature-icon-wrapper">
+                  <ZapIcon size={20} />
+                </div>
+                <h4 className="feature-title">Urgency & Pressure Detection</h4>
+                <p className="feature-text">
+                  Detects artificial time limits, electricity cutoff threats, and immediate bank freeze tactics used to force rushed mistakes.
+                </p>
+              </div>
+
+              <div className="feature-item-card">
+                <div className="feature-icon-wrapper">
+                  <GlobeIcon size={20} />
+                </div>
+                <h4 className="feature-title">Subdomain & Brand Spoofing</h4>
+                <p className="feature-text">
+                  Unmasks sneaky subdomains like <code>paypal.com.account-update.xyz</code> where the true destination domain is disguised.
+                </p>
+              </div>
+
+              <div className="feature-item-card">
+                <div className="feature-icon-wrapper">
+                  <SparklesIcon size={20} />
+                </div>
+                <h4 className="feature-title">Gemini 2.0 AI Synthesis</h4>
+                <p className="feature-text">
+                  Goes beyond keyword matching to interpret emotional context, subtle deception, and advance-fee promise patterns.
+                </p>
+              </div>
+
+              <div className="feature-item-card">
+                <div className="feature-icon-wrapper">
+                  <LockIcon size={20} />
+                </div>
+                <h4 className="feature-title">100% Privacy Guarantee</h4>
+                <p className="feature-text">
+                  Your submitted messages are inspected in memory and never stored in a permanent database or sold to third parties.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 7. About / Footer Section */}
+        <footer id="about" className="footer-section">
+          <div className="footer-container">
+            <div className="footer-top-row">
+              <div className="footer-brand-info">
+                <div className="footer-logo">
+                  <span className="logo-text">Scam<span className="logo-accent">Lens</span></span>
+                  <span className="logo-pill">AI</span>
+                </div>
+                <p className="footer-tagline">
+                  AI-Powered Scam Pattern Detection for Ordinary People.
+                  Empowering internet users to spot social engineering and avoid financial fraud.
+                </p>
+                <div className="footer-badge-pill">
+                  <span>🎓 Computer Science & Engineering Major Project</span>
+                </div>
+              </div>
+
+              <div className="footer-links-col">
+                <h5 className="footer-heading">Platform</h5>
+                <button type="button" className="footer-link-btn" onClick={scrollToScanner}>Message Scanner</button>
+                <button type="button" className="footer-link-btn" onClick={scrollToScanner}>URL Inspector</button>
+                <button type="button" className="footer-link-btn" onClick={scrollToScanner}>Email Auditor</button>
+              </div>
+
+              <div className="footer-links-col">
+                <h5 className="footer-heading">Information</h5>
+                <button type="button" className="footer-link-btn" onClick={scrollToHowItWorks}>How It Works</button>
+                <button type="button" className="footer-link-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Top</button>
+              </div>
+            </div>
+
+            <div className="footer-bottom-row">
+              <p className="footer-copyright">
+                © {new Date().getFullYear()} ScamLens. Built for cybersecurity awareness and research.
+              </p>
+              <div className="footer-privacy-note">
+                <span>Privacy-First • No Tracking • Ethical AI</span>
+              </div>
+            </div>
+          </div>
+        </footer>
       </main>
-
-      {/* Modern Cyber Footer */}
-      <footer className="cyber-footer">
-        <div className="footer-container">
-          <div className="footer-brand-row">
-            <div className="footer-brand">
-              <span className="brand-title">Scam<span className="brand-accent">Lens</span></span>
-              <span className="footer-badge">AI CYBER DEFENSE</span>
-            </div>
-            <p className="footer-mission">
-              Empowering ordinary people to identify social engineering, phishing, and scam manipulation before financial loss.
-            </p>
-          </div>
-
-          <div className="footer-meta-row">
-            <div className="footer-pill-group">
-              <span className="footer-meta-pill">🎓 College CSE Major Project</span>
-              <span className="footer-meta-pill">⚡ Dual-Layer Rule + Gemini AI</span>
-              <span className="footer-meta-pill">🔒 Zero Message Logging</span>
-            </div>
-            <span className="copyright-text">ScamLens © 2026. Built for Public Cyber Awareness.</span>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

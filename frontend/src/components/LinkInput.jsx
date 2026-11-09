@@ -1,30 +1,30 @@
 import React from 'react';
-import { GlobeIcon, SearchIcon, TrashIcon, CopyIcon, ZapIcon } from './Icons';
+import { GlobeIcon, SearchIcon, TrashIcon, CopyIcon, ZapIcon, SparklesIcon } from './Icons';
 
 const URL_PRESETS = [
   {
     title: '💳 Fake PayPal Subdomain',
-    tag: 'SUBDOMAIN-SPOOF',
+    tag: 'Subdomain Spoof',
     url: 'http://paypal.com.account-update.xyz/login'
   },
   {
     title: '🛒 Amaz0n Typosquatting',
-    tag: 'TYPOSQUATTING',
+    tag: 'Lookalike Domain',
     url: 'https://amaz0n-support-verify.click/order'
   },
   {
     title: '🏦 Fake SBI Portal',
-    tag: 'COMPOUND-BRAND',
+    tag: 'Compound Brand',
     url: 'http://sbi-kyc-update-portal.com/netbanking'
   },
   {
     title: '📦 Shortened Redirect Link',
-    tag: 'SHORTENER',
+    tag: 'Shortener',
     url: 'https://bit.ly/claim-free-prize-2026'
   },
   {
-    title: '🌐 Official Google Search (Safe)',
-    tag: 'BENIGN',
+    title: '🌐 Official Google (Safe)',
+    tag: 'Safe Domain',
     url: 'https://www.google.com/search?q=cybersecurity+best+practices'
   }
 ];
@@ -64,110 +64,106 @@ export default function LinkInput({
   };
 
   return (
-    <div className="scanner-card">
-      <div className="scanner-header">
-        <div className="terminal-controls">
-          <span className="control-dot red"></span>
-          <span className="control-dot yellow"></span>
-          <span className="control-dot green"></span>
-          <span className="terminal-title">scamlens://threat-inspector/url-domain</span>
-        </div>
-        <div className="scanner-meta-status">
-          <span className="live-status-pill">
-            <span className="pulse-dot"></span>
-            ZERO-DAY DOMAIN ANALYZER
-          </span>
-        </div>
-      </div>
-
-      <div className="presets-container">
-        <div className="presets-label-row">
+    <div className="input-card-container">
+      {/* Sample Scenarios */}
+      <div className="presets-wrapper">
+        <div className="presets-header">
           <span className="presets-label">
             <ZapIcon size={14} className="accent-icon" />
-            Common Malicious Link Vectors:
+            Try a sample suspicious URL:
           </span>
-          <span className="presets-hint">Click a deceptive URL pattern to test:</span>
+          <span className="presets-hint">Inspect subdomains, fake brands & redirection</span>
         </div>
-        <div className="preset-chips-grid">
+        <div className="preset-chips-list">
           {URL_PRESETS.map((preset, idx) => (
             <button
               key={idx}
               type="button"
-              className={`preset-chip ${preset.tag.toLowerCase()}`}
+              className="preset-chip-btn"
               onClick={() => handlePresetClick(preset.url)}
-              title="Load this sample link"
+              title="Load sample link"
             >
-              <span className="preset-chip-title">{preset.title}</span>
-              <span className="preset-chip-tag">{preset.tag}</span>
+              <span className="preset-chip-text">{preset.title}</span>
+              <span className="preset-chip-badge">{preset.tag}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="input-frame">
-        <div className="cyber-single-input-row">
-          <div className="input-icon-box">
-            <GlobeIcon size={18} className="input-lead-icon" />
-          </div>
-          <input
-            type="text"
-            className="cyber-text-input"
-            placeholder="Paste suspicious website URL, banking login, bit.ly shortener, or domain..."
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={isLoading}
-          />
-          {url.length > 0 && (
-            <button
-              type="button"
-              className="input-inline-clear"
-              onClick={handleClear}
-              title="Clear input"
-            >
-              <TrashIcon size={16} />
-            </button>
-          )}
+      {/* Single-line URL Input */}
+      <div className="single-input-row">
+        <div className="input-prefix-icon">
+          <GlobeIcon size={18} />
         </div>
-
-        <div className="input-toolbar">
-          <div className="char-counter">
-            <span className="safe-preview-tag">🔒 Isolated preview — Will NOT execute or redirect to target site</span>
-          </div>
-          <div className="toolbar-actions">
-            <button
-              type="button"
-              className="tool-btn paste-btn"
-              onClick={handlePasteClipboard}
-              disabled={isLoading}
-            >
-              <CopyIcon size={14} />
-              <span>Paste URL</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="scanner-action-footer">
+        <input
+          type="url"
+          className="clean-text-input"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="https://example.com/login or paste any suspicious web link..."
+          disabled={isLoading}
+        />
+        {url && (
+          <button
+            type="button"
+            className="input-clear-icon-btn"
+            onClick={handleClear}
+            title="Clear link"
+          >
+            ×
+          </button>
+        )}
         <button
           type="button"
-          className={`cyber-analyze-btn ${isLoading ? 'loading' : ''}`}
-          onClick={onAnalyze}
-          disabled={isLoading || !url.trim()}
+          className="tool-btn inside-input"
+          onClick={handlePasteClipboard}
+          title="Paste from clipboard"
         >
-          {isLoading ? (
-            <>
-              <span className="cyber-spinner"></span>
-              <span className="btn-text">Inspecting Domain Infrastructure & Typosquatting...</span>
-            </>
-          ) : (
-            <>
-              <SearchIcon size={20} className="btn-icon" />
-              <span className="btn-text">Analyse Link & Domain Architecture</span>
-              <span className="btn-shine"></span>
-            </>
-          )}
+          <CopyIcon size={14} />
+          <span>Paste</span>
         </button>
+      </div>
+
+      {/* Bottom Action Footer */}
+      <div className="input-action-footer">
+        <div className="input-meta-info">
+          <span className="privacy-pill">
+            <span className="privacy-dot"></span>
+            Zero-Transmission Isolation: Inspected safely without downloading malware
+          </span>
+        </div>
+
+        <div className="button-group">
+          <button
+            type="button"
+            className="btn-clear"
+            onClick={handleClear}
+            disabled={!url && !isLoading}
+          >
+            <TrashIcon size={15} />
+            <span>Clear</span>
+          </button>
+
+          <button
+            type="button"
+            className="btn-primary-analyse"
+            onClick={onAnalyze}
+            disabled={isLoading || !url.trim()}
+          >
+            {isLoading ? (
+              <>
+                <span className="spinner-dot"></span>
+                <span>Inspecting Domain...</span>
+              </>
+            ) : (
+              <>
+                <SparklesIcon size={16} />
+                <span>Inspect Link</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

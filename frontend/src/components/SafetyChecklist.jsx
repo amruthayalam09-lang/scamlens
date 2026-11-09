@@ -5,30 +5,31 @@ export default function SafetyChecklist({ recommendations = [] }) {
   if (!recommendations || recommendations.length === 0) return null;
 
   return (
-    <div className="dashboard-section-card checklist-section">
-      <div className="section-card-header">
-        <div className="section-header-title">
-          <ShieldCheckIcon size={20} className="section-icon emerald" />
-          <h3 className="section-title">Recommended Defensive Action Steps</h3>
+    <div className="result-white-card">
+      <div className="result-card-header">
+        <div className="card-header-title-wrap">
+          <h4 className="result-card-heading">Recommended Safety Steps</h4>
+          <p className="result-card-subheading">
+            Immediate actions to protect your personal information, accounts, and money
+          </p>
         </div>
-        <span className="section-header-hint">Immediate incident response checklist</span>
+        <span className="checklist-pill-badge">
+          <ShieldCheckIcon size={14} />
+          <span>Action Checklist</span>
+        </span>
       </div>
 
-      <p className="checklist-subtext">
-        Follow these practical countermeasures immediately to secure your accounts, credentials, and devices:
-      </p>
-
-      <div className="cyber-checklist-grid">
+      <div className="checklist-items-grid">
         {recommendations.map((rec, index) => (
-          <div key={index} className="checklist-card-item">
-            <div className="step-badge">
-              <span className="step-badge-number">{index + 1}</span>
+          <div key={index} className="checklist-item-row">
+            <div className="checklist-step-number">
+              {index + 1}
             </div>
-            <div className="step-body">
-              <span className="step-title">ACTION #{index + 1}</span>
-              <p className="step-instruction">{rec}</p>
+            <div className="checklist-text-wrap">
+              <span className="checklist-step-title">STEP {index + 1}</span>
+              <p className="checklist-instruction">{rec}</p>
             </div>
-            <div className="step-check-mark">
+            <div className="checklist-check-icon">
               <CheckCircleIcon size={18} />
             </div>
           </div>

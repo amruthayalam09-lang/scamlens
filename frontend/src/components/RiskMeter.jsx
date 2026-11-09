@@ -1,122 +1,129 @@
 import React from 'react';
-import { ShieldAlertIcon, ShieldCheckIcon, AlertTriangleIcon, CpuIcon, ZapIcon } from './Icons';
+import { ShieldAlertIcon, ShieldCheckIcon, AlertTriangleIcon, SparklesIcon, ZapIcon } from './Icons';
 
 export default function RiskMeter({ assessment }) {
   if (!assessment) return null;
 
   const { riskScore = 0, riskLevel = 'Low Risk', summary, ruleFindings, aiAnalysis } = assessment;
 
+  // Exact color palette as requested:
+  // High risk: #EF4444
+  // Medium risk: #F59E0B
+  // Low risk: #16A34A
   let riskTier = 'low';
-  let tierLabel = 'LOW RISK / SAFE';
-  let strokeColor = '#10b981';
-  let glowColor = 'rgba(16, 185, 129, 0.4)';
+  let tierLabel = 'Low Risk — Likely Safe';
+  let strokeColor = '#16A34A';
+  let badgeBg = 'rgba(22, 163, 74, 0.08)';
+  let badgeBorder = 'rgba(22, 163, 74, 0.25)';
+  let IconComponent = ShieldCheckIcon;
 
   if (riskScore >= 60 || riskLevel === 'High Risk') {
     riskTier = 'high';
-    tierLabel = 'CRITICAL RISK / SCAM';
-    strokeColor = '#ef4444';
-    glowColor = 'rgba(239, 68, 68, 0.4)';
+    tierLabel = 'High Risk — Strong Scam Indicators';
+    strokeColor = '#EF4444';
+    badgeBg = 'rgba(239, 68, 68, 0.08)';
+    badgeBorder = 'rgba(239, 68, 68, 0.25)';
+    IconComponent = ShieldAlertIcon;
   } else if (riskScore >= 25 || riskLevel === 'Moderate Risk') {
     riskTier = 'moderate';
-    tierLabel = 'MODERATE RISK / CAUTION';
-    strokeColor = '#f59e0b';
-    glowColor = 'rgba(245, 158, 11, 0.4)';
+    tierLabel = 'Medium Risk — Exercise Caution';
+    strokeColor = '#F59E0B';
+    badgeBg = 'rgba(245, 158, 11, 0.08)';
+    badgeBorder = 'rgba(245, 158, 11, 0.25)';
+    IconComponent = AlertTriangleIcon;
   }
 
   const categories = ruleFindings?.categoriesDetected || [];
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (Math.min(100, Math.max(0, riskScore)) / 100) * circumference;
+  const clampedScore = Math.min(100, Math.max(0, riskScore));
+  const strokeDashoffset = circumference - (clampedScore / 100) * circumference;
 
   return (
-    <div className={`risk-dashboard-card ${riskTier}`}>
-      {/* Visual Radial Gauge */}
-      <div className="gauge-column">
-        <div className="gauge-outer-ring">
-          <svg className="radial-gauge-svg" width="140" height="140" viewBox="0 0 140 140">
-            {/* Background track */}
+    <div className={`results-score-card ${riskTier}`}>
+      {/* Visual Radial Gauge Column */}
+      <div className="score-gauge-column">
+        <div className="gauge-outer-circle">
+          <svg className="radial-svg" width="136" height="136" viewBox="0 0 136 136">
             <circle
-              cx="70"
-              cy="70"
+              cx="68"
+              cy="68"
               r={radius}
-              className="gauge-track"
-              strokeWidth="10"
+              className="gauge-bg-track"
+              strokeWidth="9"
               fill="transparent"
             />
-            {/* Animated progress circle */}
             <circle
-              cx="70"
-              cy="70"
+              cx="68"
+              cy="68"
               r={radius}
-              className="gauge-progress"
-              strokeWidth="10"
+              className="gauge-progress-circle"
+              strokeWidth="9"
               stroke={strokeColor}
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
               fill="transparent"
-              style={{ filter: `drop-shadow(0 0 8px ${glowColor})` }}
             />
           </svg>
-
-          {/* Centered Score Display */}
           <div className="gauge-center-content">
-            <span className="gauge-score-value">{riskScore}</span>
-            <span className="gauge-score-scale">/ 100</span>
+            <span className="gauge-score-value" style={{ color: strokeColor }}>
+              {clampedScore}
+            </span>
+            <span className="gauge-score-max">/100</span>
             <span className="gauge-score-caption">RISK SCORE</span>
           </div>
         </div>
-
-        {/* Dynamic Threat Status Badge */}
-        <div className={`threat-badge-pill ${riskTier}`}>
-          <span className="threat-beacon"></span>
-          <span className="threat-badge-text">{tierLabel}</span>
-        </div>
       </div>
 
-      {/* Threat Summary & Vectors */}
-      <div className="assessment-details-column">
-        <div className="assessment-header-bar">
-          <div className="assessment-title-group">
-            {riskTier === 'high' ? (
-              <ShieldAlertIcon size={22} className="threat-status-icon high" />
-            ) : riskTier === 'moderate' ? (
-              <AlertTriangleIcon size={22} className="threat-status-icon moderate" />
-            ) : (
-              <ShieldCheckIcon size={22} className="threat-status-icon low" />
-            )}
-            <h3 className="assessment-title">Threat Assessment Overview</h3>
-          </div>
+      {/* Narrative & Category Breakdown Column */}
+      <div className="score-details-column">
+        <div className="score-badge-row">
+          <span
+            className="risk-level-badge"
+            style={{
+              color: strokeColor,
+              backgroundColor: badgeBg,
+              borderColor: badgeBorder
+            }}
+          >
+            <IconComponent size={16} />
+            <span>{tierLabel}</span>
+          </span>
 
-          <div className="engine-status-chip">
-            {aiAnalysis?.available ? (
-              <span className="ai-active-chip" title="Analyzed with Google Gemini 2.0 Flash + Pattern Rules">
-                <CpuIcon size={14} />
-                <span>Gemini AI + Rule Synthesis</span>
-              </span>
-            ) : (
-              <span className="rule-active-chip" title="Scanned via offline Heuristic Pattern Rules">
-                <ZapIcon size={14} />
-                <span>Heuristic Rule Engine</span>
-              </span>
-            )}
-          </div>
+          {aiAnalysis?.available && (
+            <span className="ai-verified-chip" title="Synthesized with Google Gemini AI contextual reasoning">
+              <SparklesIcon size={13} />
+              <span>AI Synthesized</span>
+            </span>
+          )}
         </div>
 
-        <p className="assessment-summary-text">
-          {summary}
+        <h3 className="score-headline">
+          {riskTier === 'high' && 'High Probability of Deception Detected'}
+          {riskTier === 'moderate' && 'Caution Advised: Suspicious Patterns Found'}
+          {riskTier === 'low' && 'No Major Psychological or Deception Patterns Found'}
+        </h3>
+
+        <p className="score-summary-text">
+          {summary || (
+            riskTier === 'high'
+              ? 'This content displays critical hallmarks of social engineering, including high pressure urgency, impersonation, or credential theft attempts.'
+              : riskTier === 'moderate'
+                ? 'This content contains questionable triggers or unverified claims. Verify the sender independently before clicking any links or providing details.'
+                : 'ScamLens did not identify manipulative red flags in this message. Always stay alert when sharing sensitive data.'
+          )}
         </p>
 
-        {/* Identified Threat Vectors */}
+        {/* Category Tag Cloud */}
         {categories.length > 0 && (
-          <div className="threat-vectors-wrap">
-            <span className="vectors-title">IDENTIFIED THREAT VECTORS:</span>
-            <div className="vectors-tags-list">
-              {categories.map((cat, idx) => (
-                <div key={idx} className={`vector-tag-pill ${riskTier}`}>
-                  <span className="vector-alert-bullet">⚠</span>
-                  <span className="vector-name">{cat.replace(/_/g, ' ').toUpperCase()}</span>
-                </div>
+          <div className="detected-categories-cloud">
+            <span className="categories-label">Identified Threat Vectors:</span>
+            <div className="categories-pills">
+              {categories.map((cat, i) => (
+                <span key={i} className="threat-category-pill">
+                  {cat}
+                </span>
               ))}
             </div>
           </div>
