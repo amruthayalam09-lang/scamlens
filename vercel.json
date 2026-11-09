@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npm --prefix frontend install @rolldown/binding-linux-x64-gnu@1.2.15 && npm --prefix frontend run build",
+  "outputDirectory": "frontend/dist",
   "rewrites": [
     {
       "source": "/((?!api/.*).*)",

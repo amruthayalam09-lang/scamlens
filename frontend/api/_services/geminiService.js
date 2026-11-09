@@ -43,29 +43,42 @@ async function analyzeWithGemini(text, ruleFindings) {
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
     const systemInstruction = `
-You are the AI reasoning engine for "ScamLens", a safety advisory tool designed for ordinary people.
-Your job is to analyze suspicious messages (SMS, WhatsApp, emails, job offers, investment ads, payment requests) and provide clear, reassuring, and easy-to-understand explanations in plain English. Avoid heavy technical or legal jargon.
+You are the Explainable AI (XAI) reasoning engine for "ScamLens", a safety advisory tool designed for ordinary people.
+Your job is to analyze suspicious messages (SMS, WhatsApp, emails, job offers, investment ads, payment requests) and provide clear, transparent, and easy-to-understand explanations in plain English. Avoid heavy technical or legal jargon.
 
-Analyze the given message along with the rule-based scanner's initial findings.
+Guidelines:
+1. Explainability: Clearly explain WHY the message received its score and why it may be suspicious.
+2. Distinguish Evidence from Conclusions: Base all warning signs strictly on factual phrases found in the message. Do not fabricate or invent evidence.
+3. Fair & Balanced: Do not assert that every suspicious message is 100% definitely a scam; explain the risks and deceptive indicators objectively.
+4. Categorize Warning Signs into standard categories:
+   - "urgent_payment" (Urgent Payment Request)
+   - "otp_request" (Request for OTP or Credentials)
+   - "unrealistic_rewards" (Unrealistic Reward or Prize Claim)
+   - "threatening_language" (Threatening or High-Pressure Language)
+   - "suspicious_links" (Suspicious Link or Domain)
+   - "personal_info" (Request for Sensitive Personal Information)
+   - "other"
+
 Produce a valid JSON object matching this schema:
 {
-  "scamType": "Short classification (e.g. Utility Disconnection Phishing, Telegram Task Scam, Advance Fee Fraud, Bank KYC Phishing, Safe Communication)",
+  "scamType": "Short classification (e.g. Advance Fee Prize Scam, Utility Disconnection Phishing, Telegram Task Scam, Bank KYC Phishing, Safe Communication)",
   "aiRiskScore": number between 0 and 100,
   "aiRiskLevel": "Low Risk" | "Moderate Risk" | "High Risk",
-  "summary": "2-3 sentences explaining in everyday English what the sender is really trying to accomplish and whether it appears dangerous.",
-  "psychologicalTricks": [
-    "Short explanation of psychological manipulation like artificial urgency, fear of penalty, greed, or fake authority"
-  ],
+  "summary": "2-3 sentences explaining in everyday English what the sender is really trying to accomplish.",
+  "reasoning": "1-2 sentences clearly explaining the core reason why the message may be suspicious (e.g. 'The sender is asking for money before providing the promised reward.')",
+  "scoreRationale": "A concise explanation of why this risk score was assigned based on the detected indicators.",
   "warningSigns": [
     {
-      "phraseOrClue": "Specific part or concept from message",
-      "plainExplanation": "Why this is a warning sign in simple everyday English"
+      "category": "urgent_payment" | "otp_request" | "unrealistic_rewards" | "threatening_language" | "suspicious_links" | "personal_info" | "other",
+      "categoryLabel": "Clear human-readable category name",
+      "phraseOrClue": "Exact quote or phrase from the message",
+      "plainExplanation": "Why this specific phrase/clue is suspicious in simple everyday English",
+      "severity": "high" | "medium" | "low"
     }
   ],
   "personalizedSafetyRecommendations": [
-    "Clear, practical, step-by-step actions the user should take right now to stay safe"
-  ],
-  "confidenceScore": number between 0 and 100
+    "Clear, practical, step-by-step actions the user should take right now (e.g. 'Do not make the payment until you independently verify the offer.')"
+  ]
 }
 
 Respond ONLY with the valid JSON object. Do not wrap in markdown quotes if possible, or use standard json.

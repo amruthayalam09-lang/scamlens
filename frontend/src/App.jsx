@@ -8,6 +8,8 @@ import LinkInput from './components/LinkInput';
 import EmailInput from './components/EmailInput';
 import RiskMeter from './components/RiskMeter';
 import HighlightViewer from './components/HighlightViewer';
+import AiExplanationCard from './components/AiExplanationCard';
+import WarningSignsCard from './components/WarningSignsCard';
 import UrlViewer from './components/UrlViewer';
 import EmailViewer from './components/EmailViewer';
 import WarningCard from './components/WarningCard';
@@ -481,14 +483,30 @@ export default function App() {
                   </span>
                 </div>
 
-                {/* Prominent Risk Score Card */}
+                {/* Card 1: Prominent Explainable Risk Score Card */}
                 <RiskMeter assessment={assessment} />
 
-                {/* Visual Highlight Viewer for message tab */}
+                {/* Card 2: Visual Highlight Viewer & Phrase Meaning Breakdown for message tab */}
                 {activeTab === 'message' && (
                   <HighlightViewer
                     text={lastAnalyzedText || message}
                     matches={assessment.ruleFindings?.matches || []}
+                  />
+                )}
+
+                {/* Card 3: AI Explanation Card (Plain-English Motive, Classification, Responsible AI Notice) */}
+                {activeTab === 'message' && (
+                  <AiExplanationCard
+                    aiExplanation={assessment.aiExplanation}
+                    scamType={assessment.aiAnalysis?.data?.scamType}
+                    riskLevel={assessment.riskLevel}
+                  />
+                )}
+
+                {/* Card 4: Categorized Warning Signs (separates Factual Evidence from AI Contextual Reasoning) */}
+                {activeTab === 'message' && (
+                  <WarningSignsCard
+                    warningSigns={assessment.warningSigns || warningCards}
                   />
                 )}
 
@@ -502,8 +520,8 @@ export default function App() {
                   <EmailViewer emailAssessment={assessment} />
                 )}
 
-                {/* Warning Cards Grid (Separate White Cards) */}
-                {warningCards.length > 0 && (
+                {/* Warning Cards Grid for URL and Email tabs */}
+                {activeTab !== 'message' && warningCards.length > 0 && (
                   <div className="warning-cards-section">
                     <div className="section-label-row">
                       <h4 className="cards-group-title">
@@ -529,8 +547,8 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Reassurance Card when 0 warnings */}
-                {warningCards.length === 0 && (
+                {/* Reassurance Card when 0 warnings on URL/Email */}
+                {activeTab !== 'message' && warningCards.length === 0 && (
                   <div className="reassurance-card">
                     <div className="reassurance-icon">
                       <ShieldCheckIcon size={24} />
@@ -545,9 +563,9 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Safety Action Steps Checklist */}
+                {/* Card 5: Safety Action Steps Checklist */}
                 <SafetyChecklist
-                  recommendations={assessment.recommendations || []}
+                  recommendations={assessment.personalizedSafetyRecommendations || assessment.recommendations || []}
                 />
 
                 {/* Ethical Disclaimer */}

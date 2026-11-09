@@ -1,21 +1,29 @@
 import React from 'react';
 import { ShieldCheckIcon, CheckCircleIcon } from './Icons';
 
+/**
+ * Card 5: Recommended Actions Card
+ * Immediate defensive action steps tailored to the detected risk level and indicators.
+ */
 export default function SafetyChecklist({ recommendations = [] }) {
   if (!recommendations || recommendations.length === 0) return null;
 
   return (
-    <div className="result-white-card">
+    <div className="result-white-card xai-action-card">
       <div className="result-card-header">
         <div className="card-header-title-wrap">
-          <h4 className="result-card-heading">Recommended Safety Steps</h4>
+          <span className="xai-tag-pill purple">
+            <ShieldCheckIcon size={13} />
+            <span>Card 5: Recommended Defensive Actions</span>
+          </span>
+          <h4 className="result-card-heading">Immediate Safety Checklist</h4>
           <p className="result-card-subheading">
-            Immediate actions to protect your personal information, accounts, and money
+            Concrete actions to safeguard your personal credentials, bank accounts, and devices
           </p>
         </div>
         <span className="checklist-pill-badge">
           <ShieldCheckIcon size={14} />
-          <span>Action Checklist</span>
+          <span>Action Plan ({recommendations.length} Steps)</span>
         </span>
       </div>
 

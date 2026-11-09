@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "vercel-build": "npm install @rolldown/binding-linux-x64-gnu@1.2.15 && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },

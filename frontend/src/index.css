@@ -2952,3 +2952,734 @@ button {
     padding: 20px 16px;
   }
 }
+
+
+/* ==========================================================================
+   EXPLAINABLE AI (XAI) DESIGN SYSTEM & 5-CARD SUITE
+   ========================================================================== */
+
+/* Card Tag Pills */
+.xai-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  margin-bottom: 8px;
+}
+
+.xai-tag-pill.purple {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+}
+
+.xai-header-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.xai-interpretation-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.74rem;
+  color: var(--text-paragraph);
+  background-color: #F8F7FF;
+  border: 1px solid var(--border-color);
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+/* Card 1: Score Rationale & Calculation Panel */
+.xai-card-indicator-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.xai-model-badge {
+  font-size: 0.76rem;
+  color: var(--text-paragraph);
+  background-color: #F8F7FF;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.score-main-flex-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.xai-score-rationale-box {
+  margin-top: 14px;
+  padding: 14px 18px;
+  background-color: #F8F7FF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--primary);
+}
+
+.xai-rationale-title {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.xai-rationale-text {
+  font-size: 0.92rem;
+  color: var(--text-heading);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.xai-score-breakdown-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.xai-toggle-breakdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.xai-toggle-breakdown-btn:hover {
+  background-color: var(--primary-light);
+}
+
+.xai-calculation-details-panel {
+  margin-top: 14px;
+  padding: 18px;
+  background-color: #F8F7FF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.xai-subscores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.xai-subscore-card {
+  background-color: #FFFFFF;
+  padding: 14px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.xai-subscore-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.xai-subscore-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+
+.xai-subscore-weight {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--primary);
+  background-color: var(--primary-light);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.xai-subscore-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  line-height: 1.2;
+}
+
+.xai-subscore-number .subscore-max {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-paragraph);
+}
+
+.xai-subscore-desc {
+  font-size: 0.78rem;
+  color: var(--text-paragraph);
+  margin-top: 6px;
+  line-height: 1.4;
+  margin-bottom: 0;
+}
+
+.xai-factors-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.xai-factors-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+.xai-factors-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+}
+
+.xai-factor-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: #FFFFFF;
+}
+
+.xai-factor-pill.high {
+  border-color: rgba(239, 68, 68, 0.3);
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.xai-factor-pill.medium {
+  border-color: rgba(245, 158, 11, 0.3);
+  background-color: rgba(245, 158, 11, 0.05);
+}
+
+.xai-factor-pill .factor-pts {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-paragraph);
+  background-color: #EAE8F2;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* Card 2: Glossary of Phrase Meanings */
+.xai-glossary-section {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-color);
+}
+
+.xai-glossary-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.xai-glossary-title {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin: 0;
+}
+
+.xai-glossary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.xai-glossary-item {
+  padding: 14px 18px;
+  background-color: #F8F7FF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: all 0.15s ease;
+}
+
+.xai-glossary-item:hover {
+  background-color: #FFFFFF;
+  border-color: var(--primary-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.xai-glossary-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  gap: 12px;
+}
+
+.xai-glossary-phrase-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.xai-glossary-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.xai-glossary-dot.red {
+  background-color: var(--risk-high);
+}
+
+.xai-glossary-dot.amber {
+  background-color: var(--risk-medium);
+}
+
+.xai-glossary-phrase {
+  font-size: 0.95rem;
+  color: var(--text-heading);
+  font-weight: 700;
+}
+
+.xai-glossary-cat-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.xai-glossary-cat-badge.red {
+  color: var(--risk-high);
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+.xai-glossary-cat-badge.amber {
+  color: var(--risk-medium);
+  background-color: rgba(245, 158, 11, 0.08);
+}
+
+.xai-glossary-meaning {
+  font-size: 0.88rem;
+  color: var(--text-heading);
+  line-height: 1.5;
+  margin: 0 0 4px 0;
+}
+
+.xai-glossary-meaning .meaning-prefix {
+  font-weight: 700;
+  color: var(--text-paragraph);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.xai-glossary-advice {
+  font-size: 0.84rem;
+  color: var(--primary);
+  margin: 0;
+}
+
+.xai-glossary-advice .advice-prefix {
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+/* Card 3: AI Explanation Card */
+.xai-explanation-card {
+  border-left: 4px solid var(--primary);
+}
+
+.xai-classification-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.xai-class-label {
+  font-size: 0.72rem;
+  color: var(--text-paragraph);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.xai-class-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--primary);
+  background-color: var(--primary-light);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--primary-border);
+}
+
+.xai-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.xai-primary-reason-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 20px;
+  background-color: #F8F7FF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.xai-reason-icon-col {
+  flex-shrink: 0;
+}
+
+.xai-icon-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.xai-icon-circle.red {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--risk-high);
+}
+
+.xai-icon-circle.amber {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--risk-medium);
+}
+
+.xai-icon-circle.green {
+  background-color: rgba(22, 163, 74, 0.1);
+  color: var(--risk-low);
+}
+
+.xai-reason-text-col {
+  flex: 1;
+}
+
+.xai-reason-title {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.xai-reason-text {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.xai-detailed-summary-box {
+  padding: 14px 18px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.xai-summary-label {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-paragraph);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.xai-summary-text {
+  font-size: 0.92rem;
+  color: var(--text-heading);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.xai-disclaimer-pill {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  background-color: #F8F7FF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  color: var(--text-paragraph);
+  line-height: 1.45;
+}
+
+.xai-disclaimer-icon {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Card 4: Warning Signs Card */
+.xai-filter-tabs {
+  display: flex;
+  gap: 6px;
+  background-color: #F8F7FF;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.xai-filter-tab {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-paragraph);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.xai-filter-tab.active {
+  background-color: #FFFFFF;
+  color: var(--primary);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+.xai-warning-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.xai-warning-item {
+  padding: 18px 20px;
+  background-color: #F8F7FF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  transition: all 0.15s ease;
+}
+
+.xai-warning-item:hover {
+  background-color: #FFFFFF;
+  border-color: var(--primary-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.xai-warning-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.xai-category-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.xai-category-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.xai-category-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin: 0;
+}
+
+.xai-category-sublabel {
+  font-size: 0.76rem;
+  color: var(--text-paragraph);
+}
+
+.xai-meta-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.xai-source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.xai-source-badge.factual {
+  background-color: rgba(118, 85, 232, 0.1);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+}
+
+.xai-source-badge.ai {
+  background-color: rgba(37, 99, 235, 0.08);
+  color: #2563EB;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.xai-severity-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.xai-severity-badge.high {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--risk-high);
+}
+
+.xai-severity-badge.medium {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--risk-medium);
+}
+
+.xai-severity-badge.low {
+  background-color: rgba(22, 163, 74, 0.1);
+  color: var(--risk-low);
+}
+
+.xai-evidence-box {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  background-color: #FFFFFF;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 10px;
+}
+
+.xai-evidence-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-paragraph);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.xai-evidence-quote {
+  font-size: 0.88rem;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--risk-high);
+}
+
+.xai-warning-explanation {
+  margin-bottom: 8px;
+}
+
+.xai-expl-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-paragraph);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.xai-expl-text {
+  font-size: 0.9rem;
+  color: var(--text-heading);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.xai-warning-action {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 0.84rem;
+  color: var(--primary);
+  background-color: #FFFFFF;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px dashed var(--primary-border);
+}
+
+.xai-action-label {
+  font-weight: 800;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.xai-action-text {
+  font-weight: 500;
+}
+
+.inline-reassurance {
+  margin-top: 14px;
+}
+
+@media (max-width: 768px) {
+  .score-main-flex-row {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .xai-primary-reason-box {
+    flex-direction: column;
+  }
+  
+  .xai-classification-badge {
+    align-items: flex-start;
+  }
+}

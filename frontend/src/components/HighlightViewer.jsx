@@ -1,18 +1,24 @@
 import React from 'react';
-import { TerminalIcon, AlertTriangleIcon, CheckCircleIcon } from './Icons';
+import { CheckCircleIcon, ZapIcon, AlertTriangleIcon, InfoIcon } from './Icons';
 
 /**
- * Renders the analyzed text in a clean white card with exact suspicious phrases highlighted.
+ * Card 2: Suspicious Phrases Card
+ * Renders the analyzed message with visually highlighted phrases,
+ * followed by a detailed Phrase Meaning Breakdown explaining what each phrase means in simple English.
  */
 export default function HighlightViewer({ text, matches = [] }) {
   if (!text) return null;
 
   if (!matches || matches.length === 0) {
     return (
-      <div className="result-white-card">
+      <div className="result-white-card xai-phrase-card">
         <div className="result-card-header">
           <div className="card-header-title-wrap">
-            <h4 className="result-card-heading">Analyzed Message Text</h4>
+            <span className="xai-tag-pill purple">
+              <ZapIcon size={13} />
+              <span>Card 2: Suspicious Phrases</span>
+            </span>
+            <h4 className="result-card-heading">Visual Phrase Breakdown</h4>
           </div>
           <span className="clean-status-tag">
             <CheckCircleIcon size={14} />
@@ -73,12 +79,16 @@ export default function HighlightViewer({ text, matches = [] }) {
   }
 
   return (
-    <div className="result-white-card">
+    <div className="result-white-card xai-phrase-card">
       <div className="result-card-header">
         <div className="card-header-title-wrap">
-          <h4 className="result-card-heading">Visual Phrase Breakdown</h4>
+          <span className="xai-tag-pill purple">
+            <ZapIcon size={13} />
+            <span>Card 2: Suspicious Phrases</span>
+          </span>
+          <h4 className="result-card-heading">Highlighted Text & Phrase Breakdown</h4>
           <p className="result-card-subheading">
-            Suspicious triggers and psychological pressure phrases are highlighted below
+            Specific phrases exhibiting psychological manipulation or fraudulent intent
           </p>
         </div>
         <span className="count-pill-badge">
@@ -86,6 +96,7 @@ export default function HighlightViewer({ text, matches = [] }) {
         </span>
       </div>
 
+      {/* Visual In-Situ Highlight Viewer */}
       <div className="highlighted-text-container">
         {segments.map((seg) => {
           if (seg.type === 'text') {
@@ -105,6 +116,43 @@ export default function HighlightViewer({ text, matches = [] }) {
             </mark>
           );
         })}
+      </div>
+
+      {/* Phrase Meaning Breakdown Glossary */}
+      <div className="xai-glossary-section">
+        <div className="xai-glossary-header">
+          <InfoIcon size={15} className="text-purple" />
+          <h5 className="xai-glossary-title">Plain-English Meaning of Detected Phrases</h5>
+        </div>
+
+        <div className="xai-glossary-list">
+          {nonOverlapping.map((m, idx) => {
+            const isHigh = m.severity === 'high';
+            return (
+              <div key={idx} className="xai-glossary-item">
+                <div className="xai-glossary-item-top">
+                  <div className="xai-glossary-phrase-wrap">
+                    <span className={`xai-glossary-dot ${isHigh ? 'red' : 'amber'}`}></span>
+                    <strong className="xai-glossary-phrase">"{m.phrase}"</strong>
+                  </div>
+                  <span className={`xai-glossary-cat-badge ${isHigh ? 'red' : 'amber'}`}>
+                    {m.categoryLabel}
+                  </span>
+                </div>
+
+                <p className="xai-glossary-meaning">
+                  <span className="meaning-prefix">Why this is used:</span> {m.explanation}
+                </p>
+
+                {m.recommendation && (
+                  <p className="xai-glossary-advice">
+                    <span className="advice-prefix">Defense:</span> {m.recommendation}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

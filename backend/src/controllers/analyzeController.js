@@ -88,12 +88,100 @@ async function handleAnalyze(req, res) {
       safetyRecommendations.push('If unsure, verify the sender through their official website or verified customer care number.');
     }
 
+    const aiData = geminiResult.available && geminiResult.data ? geminiResult.data : null;
+
+    // Fulfill Requirement 2 & 7: Explainable Score Breakdown and Rationale
+    const scoreBreakdown = {
+      finalScore: finalRiskScore,
+      riskLevel: finalRiskLevel,
+      ruleScore: ruleFindings.score,
+      aiScore: aiData ? aiData.aiRiskScore : null,
+      rationale: aiData?.scoreRationale || (
+        ruleFindings.matches.length > 0
+          ? `This message received a risk score of ${finalRiskScore}/100 because it matched ${ruleFindings.matches.length} known deception indicator(s) across: ${ruleFindings.categoriesDetected.join(', ')}.`
+          : `This message received a low risk score of ${finalRiskScore}/100 because no high-pressure urgency markers, credential requests, or payment demands were found.`
+      ),
+      contributingFactors: ruleFindings.matches.map(m => ({
+        category: m.categoryLabel,
+        phrase: m.phrase,
+        weight: m.weight || 20,
+        severity: m.severity
+      }))
+    };
+
+    // Fulfill Requirement 1, 5, 8: Plain-English AI Explanation
+    const aiExplanation = {
+      scamType: aiData?.scamType || (ruleFindings.matches.length > 0 ? ruleFindings.matches[0].categoryLabel : 'Unverified Communication'),
+      reason: aiData?.reasoning || (
+        ruleFindings.matches.length > 0
+          ? ruleFindings.matches[0].explanation
+          : 'No malicious manipulation patterns or high-risk requests were identified in this text.'
+      ),
+      summary: finalSummary
+    };
+
+    // Fulfill Requirement 6 & 7: Categorized Warning Signs & Distinguish Evidence from Conclusions
+    const categorizedWarningSigns = [];
+    ruleFindings.matches.forEach((m, idx) => {
+      let standardCategory = 'other';
+      const cat = (m.category || '').toLowerCase();
+      const lbl = (m.categoryLabel || '').toLowerCase();
+
+      if (cat.includes('payment') || lbl.includes('payment') || lbl.includes('fee')) {
+        standardCategory = 'urgent_payment';
+      } else if (cat.includes('credentials') || cat.includes('otp') || lbl.includes('otp')) {
+        standardCategory = 'otp_request';
+      } else if (cat.includes('investment') || lbl.includes('reward') || lbl.includes('prize') || lbl.includes('job')) {
+        standardCategory = 'unrealistic_rewards';
+      } else if (cat.includes('urgency') || cat.includes('fear') || lbl.includes('threat') || lbl.includes('cutoff')) {
+        standardCategory = 'threatening_language';
+      } else if (cat.includes('link') || lbl.includes('link') || lbl.includes('domain')) {
+        standardCategory = 'suspicious_links';
+      } else if (cat.includes('personal') || lbl.includes('personal') || lbl.includes('identity')) {
+        standardCategory = 'personal_info';
+      }
+
+      categorizedWarningSigns.push({
+        id: `warn-rule-${idx}`,
+        source: 'Factual Pattern Evidence',
+        standardCategory,
+        categoryLabel: m.categoryLabel,
+        phrase: m.phrase,
+        explanation: m.explanation,
+        severity: m.severity || 'high',
+        recommendation: m.recommendation
+      });
+    });
+
+    if (aiData && Array.isArray(aiData.warningSigns)) {
+      aiData.warningSigns.forEach((aiWarn, idx) => {
+        const isDuplicate = categorizedWarningSigns.some(
+          s => s.phrase && aiWarn.phraseOrClue && s.phrase.toLowerCase().includes(aiWarn.phraseOrClue.toLowerCase())
+        );
+        if (!isDuplicate) {
+          categorizedWarningSigns.push({
+            id: `warn-ai-${idx}`,
+            source: 'AI Analytical Interpretation',
+            standardCategory: aiWarn.category || 'other',
+            categoryLabel: aiWarn.categoryLabel || 'Contextual Manipulation Cue',
+            phrase: aiWarn.phraseOrClue,
+            explanation: aiWarn.plainExplanation,
+            severity: aiWarn.severity || 'medium',
+            recommendation: 'Verify the identity of the sender independently.'
+          });
+        }
+      });
+    }
+
     return res.json({
       success: true,
       assessment: {
         riskScore: finalRiskScore,
         riskLevel: finalRiskLevel,
         summary: finalSummary,
+        scoreBreakdown,
+        aiExplanation,
+        warningSigns: categorizedWarningSigns,
         ruleFindings: {
           score: ruleFindings.score,
           riskLevel: ruleFindings.riskLevel,

@@ -69,6 +69,16 @@ const PATTERN_DEFINITIONS = [
         regex: /(?:won|winner\s+of|selected\s+for)\s+(?:lottery|jackpot|lucky\s+draw|kbc|cash\s+prize|reward\s+of\s+[$₹]?\d+)/i,
         explanation: 'You cannot win a lottery or draw that you never entered. These messages lure victims into paying fake release taxes.',
         recommendation: 'Disregard unexpected lottery or prize notifications; they are always fraudulent.'
+      },
+      {
+        regex: /(?:congratulations!?)?\s*(?:you\s+(?:have\s+)?(?:won|been\s+selected\s+for)|winner\s+of)\s+(?:[$₹]\s?[\d,]+|\d+\s?(?:inr|rs|usd|rupees)?|lottery|jackpot|lucky\s+draw|kbc|cash\s+prize|reward|prize)/i,
+        explanation: 'Unexpected announcements claiming you won a cash prize or lottery without entering are classic advance-fee prize traps.',
+        recommendation: 'You cannot win a contest or lottery you never entered. Never pay advance fees to release winnings.'
+      },
+      {
+        regex: /(?:to\s+)?claim\s+(?:your\s+)?(?:prize|reward|cash|winnings|lottery|funds|gift)/i,
+        explanation: 'Prompting you to claim a prize or cash reward is designed to lower your skepticism before asking for upfront payment or bank details.',
+        recommendation: 'Legitimate lotteries and awards never require you to pay upfront fees to claim winnings.'
       }
     ]
   },
@@ -199,6 +209,21 @@ const PATTERN_DEFINITIONS = [
         regex: /(?:download\s+apk|install\s+\.apk|apk\s+file)/i,
         explanation: 'Sideloading Android APKs outside of official app stores can install spyware, SMS interceptors, and banking Trojans.',
         recommendation: 'Never download or install APK files received through SMS, WhatsApp, or unsolicited emails.'
+      }
+    ]
+  },
+
+  // 7. Requests for Personal Information
+  {
+    category: 'personal_info',
+    categoryLabel: 'Request for Sensitive Personal Information',
+    severity: 'medium',
+    weight: 25,
+    rules: [
+      {
+        regex: /(?:send|share|provide|upload|enter|confirm)\s+(?:your\s+)?(?:pan\s+card|aadhaar(?:\s+card)?|ssn|social\s+security|passport|id\s+proof|mother(?:'s)?\s+maiden\s+name|bank\s+details|card\s+details|credit\s+card\s+number)/i,
+        explanation: 'Unsolicited requests demanding government identity cards or sensitive personal information are frequently used for identity theft and financial fraud.',
+        recommendation: 'Never send copies of identity documents, PAN, or Aadhaar cards via chat or unverified websites.'
       }
     ]
   }
