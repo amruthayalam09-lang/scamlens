@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheckIcon, CpuIcon, SparklesIcon, CheckCircleIcon, BarChartIcon } from './Icons';
+import { ShieldCheckIcon, CpuIcon, SparklesIcon, CheckCircleIcon, BarChartIcon, GlobeIcon } from './Icons';
 
 export default function Header({ backendStatus, geminiConfigured, onScanClick }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -55,6 +55,10 @@ export default function Header({ backendStatus, geminiConfigured, onScanClick })
           </button>
           <button type="button" className="nav-link" onClick={() => scrollTo('screenshot-analyzer')}>
             Screenshot OCR
+          </button>
+          <button type="button" className="nav-link" onClick={() => scrollTo('scam-translator')}>
+            <GlobeIcon size={14} className="nav-assistant-icon" />
+            <span>Translator</span>
           </button>
           <button type="button" className="nav-link nav-link-assistant" onClick={() => scrollTo('ai-assistant')}>
             <SparklesIcon size={14} className="nav-assistant-icon" />

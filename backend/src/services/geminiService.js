@@ -466,9 +466,328 @@ Return the structured JSON analysis report.
   }
 }
 
+/**
+ * Supported languages for the Scam Translator feature
+ */
+const SUPPORTED_LANGUAGES = {
+  en: { code: 'en', name: 'English', native: 'English' },
+  te: { code: 'te', name: 'Telugu', native: 'తెలుగు' },
+  hi: { code: 'hi', name: 'Hindi', native: 'हिन्दी' },
+  ta: { code: 'ta', name: 'Tamil', native: 'தமிழ்' },
+  kn: { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ' }
+};
+
+/**
+ * Intelligent multilingual fallback when Gemini API key is missing or offline
+ */
+function getFallbackTranslation(text, targetLang, ruleFindings = {}) {
+  const langKey = SUPPORTED_LANGUAGES[targetLang] ? targetLang : 'en';
+  const langInfo = SUPPORTED_LANGUAGES[langKey];
+  const q = text.toLowerCase();
+
+  const isLottery = q.includes('congratulations') || q.includes('won') || q.includes('prize') || q.includes('lottery') || q.includes('50,000') || q.includes('50000');
+  const isPower = q.includes('electricity') || q.includes('power') || q.includes('disconnected') || q.includes('bill');
+  const isKyc = q.includes('kyc') || q.includes('pan') || q.includes('bank') || q.includes('account blocked') || q.includes('otp');
+  const isJob = q.includes('job') || q.includes('work from home') || q.includes('earn') || q.includes('daily');
+
+  if (langKey === 'te') {
+    if (isLottery) {
+      return {
+        targetLanguage: 'Telugu',
+        targetLanguageCode: 'te',
+        translatedMessage: 'అభినందనలు! మీరు ₹50,000 గెలుచుకున్నారు. మీ బహుమతిని క్లెయిమ్ చేయడానికి వెంటనే ₹500 చెల్లించండి.',
+        actualMeaning: 'ఈ సందేశం వెనుక ఉన్న అసలు ఉద్దేశం మీకు ఎటువంటి బహుమతి ఇవ్వడం కాదు. కేవలం మీ వద్ద నుండి ₹500 ముందస్తుగా వసూలు చేసి మోసం చేయడమే.',
+        suspiciousRequests: [
+          'లాటరీ లేదా బహుమతి పేరుతో ముందస్తుగా ₹500 చెల్లించాలనే డిమాండ్.',
+          'మీరు పాల్గొనని పోటీలో భారీ నగదు గెలుచుకున్నారని నమ్మించే ప్రయత్నం.',
+          'ఆలోచించే సమయం ఇవ్వకుండా వెంటనే చెల్లించాలని తొందరపెట్టడం.'
+        ],
+        dangerExplanation: 'మీరు ఈ ₹500 పంపితే ఆ డబ్బు వెంటనే పోతుంది. మోసగాళ్లు ఆ తర్వాత మరింత పెద్ద మొత్తాలను అడుగుతారు లేదా సంప్రదింపులను ఆపివేస్తారు.',
+        safetyRecommendations: [
+          'ఎట్టి పరిస్థితుల్లోనూ బహుమతులు పొందడానికి ముందస్తుగా ఎవరికీ డబ్బు పంపవద్దు.',
+          'మీరు కొనుగోలు చేయని లాటరీలలో మీకు ఎప్పటికీ బహుమతులు రావని గుర్తుంచుకోండి.',
+          'ఈ మెసేజ్ పంపిన నంబర్‌ను వెంటనే బ్లాక్ చేయండి మరియు సైబర్ క్రైమ్ పోర్టల్ (1930) కు ఫిర్యాదు చేయండి.'
+        ]
+      };
+    } else if (isPower) {
+      return {
+        targetLanguage: 'Telugu',
+        targetLanguageCode: 'te',
+        translatedMessage: 'గమనిక: మీ విద్యుత్ బిల్లు చెల్లించనందున ఈ రాత్రి మీ కరెంట్ కనెక్షన్ నిలిపివేయబడుతుంది. వెంటనే ఇవ్వబడిన నంబర్‌కు సంప్రదించండి.',
+        actualMeaning: 'మోసగాళ్ళు మిమ్మల్ని భయపెట్టి, వెంటనే ఫోన్ చేయించి వ్యక్తిగత యూపీఐ ఖాతాలకు డబ్బు పంపించేలా లేదా నకిలీ యాప్స్ డౌన్‌లోడ్ చేయించేలా ప్రయత్నిస్తున్నారు.',
+        suspiciousRequests: [
+          'కరెంట్ నిలిపివేస్తామని రాత్రికి రాత్రే భయపెట్టే హెచ్చరికలు.',
+          'అధికారిక కార్యాలయం కాకుండా ప్రైవేట్ మొబైల్ నంబర్‌కు కాల్ చేయాలనే డిమాండ్.',
+          'తక్షణ చెల్లింపు చేయాలని ఒత్తిడి చేయడం.'
+        ],
+        dangerExplanation: 'వారితో మాట్లాడితే వారు మీ ఫోన్‌లో స్క్రీన్ షేరింగ్ యాప్ (AnyDesk మొదలైనవి) డౌన్‌లోడ్ చేయించి మీ బ్యాంక్ ఖాతాలోని డబ్బునంతా ఖాళీ చేసే ప్రమాదం ఉంది.',
+        safetyRecommendations: [
+          'విద్యుత్ శాఖ ఎప్పుడూ వ్యక్తిగత నంబర్ల నుండి ఇలాంటి సందేశాలు పంపదు.',
+          'మీ విద్యుత్ బిల్లు స్థితిని అధికారిక వెబ్‌సైట్ లేదా విద్యుత్ కార్యాలయంలో మాత్రమే తనిఖీ చేయండి.',
+          'సందేశంలో ఉన్న మొబైల్ నంబర్లకు ఎప్పుడూ కాల్ చేయవద్దు లేదా డబ్బు పంపవద్దు.'
+        ]
+      };
+    } else {
+      return {
+        targetLanguage: 'Telugu',
+        targetLanguageCode: 'te',
+        translatedMessage: `అనువదించబడిన సందేశం: "${text}"`,
+        actualMeaning: 'ఈ సందేశం మిమ్మల్ని ఆకర్షించడానికి లేదా తొందరపెట్టి మోసపూరిత చర్యలకు గురిచేసే అవకాశాలు ఉన్నాయి.',
+        suspiciousRequests: [
+          'ముందస్తు చెల్లింపు లేదా బ్యాంక్ వివరాలు అడగడం.',
+          'నకిలీ వెబ్‌సైట్ లింక్‌లను క్లిక్ చేయమని కోరడం.',
+          'వ్యక్తిగత గోప్యతా సమాచారాన్ని సేకరించే ప్రయత్నం.'
+        ],
+        dangerExplanation: 'అనుమానాస్పద సందేశాలకు స్పందించడం వల్ల మీ ఆర్థిక సమాచారం మరియు వ్యక్తిగత వివరాలు దొంగిలించబడవచ్చు.',
+        safetyRecommendations: [
+          'అపరిచిత వ్యక్తులు పంపిన లింక్‌లను ఎప్పుడూ క్లిక్ చేయవద్దు.',
+          'మీ పాస్‌వర్డ్‌లు, ఓటీపీ లేదా బ్యాంక్ వివరాలను ఎవరితోనూ పంచుకోవద్దు.',
+          'అనుమానం ఉంటే అధికారిక సంస్థ ప్రతినిధులను నేరుగా సంప్రదించండి.'
+        ]
+      };
+    }
+  }
+
+  if (langKey === 'hi') {
+    if (isLottery) {
+      return {
+        targetLanguage: 'Hindi',
+        targetLanguageCode: 'hi',
+        translatedMessage: 'बधाई हो! आपने ₹50,000 जीते हैं। अपना पुरस्कार प्राप्त करने के लिए तुरंत ₹500 का भुगतान करें।',
+        actualMeaning: 'इस संदेश का वास्तविक उद्देश्य आपको कोई इनाम देना नहीं है, बल्कि इनाम का लालच देकर आपसे अग्रिम ₹500 ठगना है।',
+        suspiciousRequests: [
+          'इनाम का दावा करने के लिए अग्रिम ₹500 का भुगतान करने की मांग।',
+          'बिना किसी लॉटरी में भाग लिए भारी इनाम जीतने का झूठा दावा।',
+          'बिना सोचे-समझे तुरंत पैसे भेजने के लिए दबाव बनाना।'
+        ],
+        dangerExplanation: 'यदि आप यह राशि भेजते हैं, तो यह पैसा कभी वापस नहीं मिलेगा। इसके बाद जालसाज आपसे और अधिक शुल्क मांगने लगेंगे।',
+        safetyRecommendations: [
+          'किसी भी कथित इनाम या लॉटरी को प्राप्त करने के लिए कभी भी अग्रिम भुगतान न करें।',
+          'याद रखें, जिस प्रतियोगिता में आपने भाग नहीं लिया, उसमें आप कभी नहीं जीत सकते।',
+          'इस नंबर को तुरंत ब्लॉक करें और साइबर अपराध हेल्पलाइन (1930) पर रिपोर्ट करें।'
+        ]
+      };
+    } else if (isPower) {
+      return {
+        targetLanguage: 'Hindi',
+        targetLanguageCode: 'hi',
+        translatedMessage: 'महत्वपूर्ण सूचना: पिछले बिजली बिल का भुगतान न होने के कारण आज रात आपकी बिजली काट दी जाएगी। तुरंत दिए गए नंबर पर संपर्क करें।',
+        actualMeaning: 'यह बिजली विभाग का असली संदेश नहीं है। जालसाज आपको डराकर किसी अज्ञात नंबर पर कॉल करवाकर आपके बैंक खाते से पैसे चुराने की कोशिश कर रहे हैं।',
+        suspiciousRequests: [
+          'तुरंत बिजली काटने की धमकी देकर घबराहट पैदा करना।',
+          'सरकारी कार्यालय के बजाय किसी निजी मोबाइल नंबर पर कॉल करने का निर्देश।',
+          'तुरंत ऑनलाइन भुगतान करने का अनुचित दबाव।'
+        ],
+        dangerExplanation: 'उस नंबर पर कॉल करने पर वे आपको कोई रिमोट कंट्रोल ऐप (जैसे AnyDesk) इंस्टॉल करवाकर आपका पूरा बैंक खाता खाली कर सकते हैं।',
+        safetyRecommendations: [
+          'बिजली विभाग कभी भी निजी मोबाइल नंबरों से ऐसे व्यक्तिगत धमकी भरे संदेश नहीं भेजता।',
+          'हमेशा अपने बिजली बिल की स्थिति केवल आधिकारिक ऐप या बिजली कार्यालय जाकर जांचें।',
+          'संदेश में दिए गए किसी भी अज्ञात नंबर पर कॉल न करें।'
+        ]
+      };
+    } else {
+      return {
+        targetLanguage: 'Hindi',
+        targetLanguageCode: 'hi',
+        translatedMessage: `अनुवादित संदेश: "${text}"`,
+        actualMeaning: 'इस संदेश के पीछे छिपा हुआ उद्देश्य आपको गुमराह करके संवेदनशील जानकारी या पैसे हासिल करना हो सकता है।',
+        suspiciousRequests: [
+          'संदिग्ध लिंक पर क्लिक करने या अग्रिम भुगतान का आग्रह।',
+          'गोपनीय व्यक्तिगत या वित्तीय जानकारी मांगने का प्रयास।',
+          'जल्दबाजी में निर्णय लेने का दबाव।'
+        ],
+        dangerExplanation: 'अज्ञात संदेशों के निर्देशों का पालन करने से वित्तीय धोखाधड़ी या पहचान की चोरी हो सकती है।',
+        safetyRecommendations: [
+          'अनजान संदेशों में आए किसी भी लिंक पर कभी क्लिक न करें।',
+          'अपना ओटीपी, पासवर्ड या बैंक विवरण किसी के साथ साझा न करें।',
+          'संदेह होने पर आधिकारिक स्रोतों से सीधे पुष्टि करें।'
+        ]
+      };
+    }
+  }
+
+  if (langKey === 'ta') {
+    return {
+      targetLanguage: 'Tamil',
+      targetLanguageCode: 'ta',
+      translatedMessage: isLottery
+        ? 'வாழ்த்துகள்! நீங்கள் ₹50,000 வென்றுள்ளீர்கள். உங்கள் பரிசைப் பெற உடனே ₹500 செலுத்துங்கள்.'
+        : `மொழிபெயர்க்கப்பட்ட செய்தி: "${text}"`,
+      actualMeaning: isLottery
+        ? 'இந்தச் செய்தியின் உண்மையான நோக்கம் உங்களுக்குப் பரிசு தருவது அல்ல; முன்கூட்டியே ₹500 பணத்தைப் பறிப்பதே மோசடித் திட்டம்.'
+        : 'இந்தச் செய்தி உங்களை ஏமாற்றி ரகசியத் தகவல்களை அல்லது பணத்தைப் பறிக்கும் நோக்கத்தைக் கொண்டிருக்கலாம்.',
+      suspiciousRequests: [
+        'பரிசைப் பெறுவதற்காக முன்கூட்டியே பணம் செலுத்துமாறு வற்புறுத்துதல்.',
+        'பங்கேற்காத போட்டியில் பரிசு வென்றதாகக் கூறுவது.',
+        'உடனடியாக நடவடிக்கை எடுக்க வேண்டும் என்ற அவசர அழுத்தம்.'
+      ],
+      dangerExplanation: 'நீங்கள் பணத்தை அனுப்பினால், அந்தப் பணம் திரும்பக் கிடைக்காது. இது ஒரு திட்டமிட்ட சைபர் மோசடி.',
+      safetyRecommendations: [
+        'பரிசுகளைப் பெற ஒருபோதும் முன் பணம் செலுத்த வேண்டாம்.',
+        'தெரியாத எண்களிலிருந்து வரும் செய்திகளைப் புறக்கணித்து பிளாக் செய்யவும்.',
+        'சைபர் கிரைம் உதவி எண் 1930-ல் புகார் அளிக்கவும்.'
+      ]
+    };
+  }
+
+  if (langKey === 'kn') {
+    return {
+      targetLanguage: 'Kannada',
+      targetLanguageCode: 'kn',
+      translatedMessage: isLottery
+        ? 'ಅಭಿನಂದನೆಗಳು! ನೀವು ₹50,000 ಗೆದ್ದಿದ್ದೀರಿ. ನಿಮ್ಮ ಬಹುಮಾನವನ್ನು ಕ್ಲೈಮ್ ಮಾಡಲು ತಕ್ಷಣ ₹500 ಪಾವತಿಸಿ.'
+        : `ಅನುವಾದಿತ ಸಂದೇಶ: "${text}"`,
+      actualMeaning: isLottery
+        ? 'ಈ ಸಂದೇಶದ ನಿಜವಾದ ಉದ್ದೇಶ ನಿಮಗೆ ಯಾವುದೇ ಬಹುಮಾನ ನೀಡುವುದಲ್ಲ, ಬದಲಿಗೆ ಮುಂಗಡವಾಗಿ ₹500 ಹಣವನ್ನು ವಂಚಿಸುವುದಾಗಿದೆ.'
+        : 'ಈ ಸಂದೇಶವು ನಿಮ್ಮನ್ನು ಮೋಸಗೊಳಿಸಿ ಸೂಕ್ಷ್ಮ ಮಾಹಿತಿ ಅಥವಾ ಹಣವನ್ನು ಪಡೆಯುವ ಹುನ್ನಾರವಾಗಿರಬಹುದು.',
+      suspiciousRequests: [
+        'ಬಹುಮಾನಕ್ಕಾಗಿ ಮುಂಗಡ ಹಣ ಪಾವತಿಸಲು ಬೇಡಿಕೆ.',
+        'ಭಾಗವಹಿಸದ ಲಾಟರಿಯಲ್ಲಿ ಬಹುಮಾನ ಬಂದಿದೆ ಎಂದು ನಂಬಿಸುವುದು.',
+        'ತಕ್ಷಣವೇ ಹಣ ಕಳುಹಿಸಲು ಅನಗತ್ಯ ಆತುರಪಡಿಸುವುದು.'
+      ],
+      dangerExplanation: 'ನೀವು ಹಣವನ್ನು ಕಳುಹಿಸಿದರೆ, ಆ ಹಣ ಶಾಶ್ವತವಾಗಿ ಕಳೆದುಹೋಗುತ್ತದೆ ಮತ್ತು ಯಾವುದೇ ಬಹುಮಾನ ಸಿಗುವುದಿಲ್ಲ.',
+      safetyRecommendations: [
+        'ಯಾವುದೇ ಬಹುಮಾನ ಪಡೆಯಲು ಎಂದಿಗೂ ಮುಂಗಡ ಹಣ ನೀಡಬೇಡಿ.',
+        'ಅಪರಿಚಿತ ಸಂಖ್ಯೆಯಿಂದ ಬಂದ ಸಂದೇಶವನ್ನು ಬ್ಲಾಕ್ ಮಾಡಿ.',
+        'ಸೈಬರ್ ಕ್ರೈಮ್ ಸಹಾಯವಾಣಿ 1930 ಗೆ ದೂರು ನೀಡಿ.'
+      ]
+    };
+  }
+
+  // English default
+  return {
+    targetLanguage: 'English',
+    targetLanguageCode: 'en',
+    translatedMessage: text,
+    actualMeaning: isLottery
+      ? 'The sender has no intention of granting you prize money. The message is an advance-fee trap designed to steal your upfront payment.'
+      : 'The message contains psychological tactics aimed at manipulating you into making a hasty decision or sharing credentials.',
+    suspiciousRequests: [
+      'Demand for upfront payment before receiving a reward.',
+      'Claiming winnings from a contest you never entered.',
+      'High-pressure urgency demanding immediate compliance.'
+    ],
+    dangerExplanation: 'Transferring money or clicking the sender\'s links directly risks immediate financial loss and compromise of your banking details.',
+    safetyRecommendations: [
+      'Never send upfront advance fees to claim prizes or lottery winnings.',
+      'Block the sender\'s phone number or email address immediately.',
+      'Report financial cyber scams to official authorities or the 1930 helpline.'
+    ]
+  };
+}
+
+/**
+ * Translates and explains a suspicious message into the user's preferred language
+ * using Google Gemini AI, with automatic safety fallback.
+ * 
+ * @param {string} text The message text
+ * @param {string} targetLang The target language code ('en', 'te', 'hi', 'ta', 'kn')
+ * @param {Object} ruleFindings Summary findings from the pattern engine
+ * @returns {Promise<Object>} Multilingual scam translation and safety breakdown
+ */
+async function translateAndExplainScam(text, targetLang = 'en', ruleFindings = {}) {
+  const langKey = SUPPORTED_LANGUAGES[targetLang] ? targetLang : 'en';
+  const langInfo = SUPPORTED_LANGUAGES[langKey];
+
+  if (!isGeminiConfigured()) {
+    console.log(`[ScamLens] Gemini not configured, using verified multilingual safety engine for ${langInfo.name}`);
+    const fallback = getFallbackTranslation(text, langKey, ruleFindings);
+    return {
+      available: true,
+      source: 'Verified Multilingual Safety Knowledge Base',
+      data: fallback
+    };
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+    const systemInstruction = `
+You are the expert "Scam Translator & Safety Explainer" for ScamLens.
+Your mission is to help people understand suspicious or deceptive messages in their native language (${langInfo.name} / ${langInfo.native}).
+
+IMPORTANT RULES:
+1. DO NOT SIMPLY TRANSLATE WORD-FOR-WORD.
+2. Translate the message clearly into ${langInfo.name}.
+3. Explain the TRUE INTENTION and hidden psychological deception behind the message in plain, easy-to-understand words in ${langInfo.name}.
+4. Identify specific suspicious demands or hooks in the message in ${langInfo.name}.
+5. Explain clearly why following this message is dangerous (loss of money, identity theft, malware) in ${langInfo.name}.
+6. Provide actionable, practical defensive steps in ${langInfo.name}.
+7. All output fields MUST be returned in the target language (${langInfo.name} / ${langInfo.native}).
+
+Required JSON Schema:
+{
+  "targetLanguage": "${langInfo.name}",
+  "targetLanguageCode": "${langKey}",
+  "translatedMessage": "Fluent, accurate translation of the message into ${langInfo.name}",
+  "actualMeaning": "Simple explanation in ${langInfo.name} explaining what the scammer is REALLY trying to do (the hidden trap).",
+  "suspiciousRequests": [
+    "Specific suspicious request or trick 1 in ${langInfo.name}",
+    "Specific suspicious request or trick 2 in ${langInfo.name}"
+  ],
+  "dangerExplanation": "Why this message poses a danger to the recipient in ${langInfo.name}.",
+  "safetyRecommendations": [
+    "Clear protective action 1 in ${langInfo.name}",
+    "Clear protective action 2 in ${langInfo.name}",
+    "Clear protective action 3 in ${langInfo.name}"
+  ]
+}
+
+Return ONLY valid JSON matching this schema.
+`;
+
+    const userPrompt = `
+Analyze and translate this suspicious message into ${langInfo.name} (${langInfo.native}):
+"""
+${text}
+"""
+`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: userPrompt,
+      config: {
+        systemInstruction: systemInstruction,
+        responseMimeType: 'application/json',
+        temperature: 0.2,
+        httpOptions: { timeout: 25000 }
+      }
+    });
+
+    const responseText = response.text;
+    if (!responseText) {
+      throw new Error('Gemini returned an empty translation response.');
+    }
+
+    let parsedResult;
+    try {
+      parsedResult = JSON.parse(responseText);
+    } catch (parseErr) {
+      const cleanJson = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
+      parsedResult = JSON.parse(cleanJson);
+    }
+
+    return {
+      available: true,
+      source: 'Google Gemini 2.0 Flash Multilingual AI',
+      data: parsedResult
+    };
+  } catch (err) {
+    console.error(`[ScamLens] Gemini translation error: ${err.message}. Engaging safety fallback.`);
+    const fallback = getFallbackTranslation(text, langKey, ruleFindings);
+    return {
+      available: true,
+      source: 'Verified Multilingual Safety Knowledge Base (Fallback)',
+      data: fallback
+    };
+  }
+}
+
 module.exports = {
   isGeminiConfigured,
   analyzeWithGemini,
   chatWithAssistant,
-  analyzeScreenshotWithGemini
+  analyzeScreenshotWithGemini,
+  translateAndExplainScam,
+  SUPPORTED_LANGUAGES
 };

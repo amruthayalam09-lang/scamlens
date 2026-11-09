@@ -8,7 +8,9 @@ const {
   analyzeWithGemini,
   isGeminiConfigured,
   chatWithAssistant,
-  analyzeScreenshotWithGemini
+  analyzeScreenshotWithGemini,
+  translateAndExplainScam,
+  SUPPORTED_LANGUAGES
 } = require('./geminiService');
 const { analyzeUrl } = require('./urlEngine');
 const { analyzeEmail } = require('./emailEngine');
@@ -412,6 +414,48 @@ async function handleAnalyzeScreenshot(req, res) {
 }
 
 /**
+ * Handles POST /api/translate
+ * Translates and explains suspicious messages into Telugu, Hindi, Tamil, Kannada, or English.
+ */
+async function handleTranslateScam(req, res) {
+  try {
+    const { message, targetLanguage = 'te' } = req.body || {};
+
+    if (!message || typeof message !== 'string' || !message.trim()) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'A message string is required for translation.'
+      });
+    }
+
+    const trimmed = message.trim();
+    // Run rule engine pre-scan to preserve objective baseline risk evaluation
+    const ruleFindings = runRuleBasedAnalysis(trimmed);
+
+    const translationResult = await translateAndExplainScam(trimmed, targetLanguage, ruleFindings);
+
+    const langInfo = SUPPORTED_LANGUAGES[targetLanguage] || SUPPORTED_LANGUAGES['en'];
+
+    return res.json({
+      success: true,
+      originalMessage: trimmed,
+      targetLanguage: langInfo.name,
+      targetLanguageCode: targetLanguage,
+      riskScore: ruleFindings.score,
+      riskLevel: ruleFindings.riskLevel,
+      translation: translationResult.data,
+      source: translationResult.source
+    });
+  } catch (error) {
+    console.error('Translation error:', error);
+    return res.status(500).json({
+      error: 'Translation Failed',
+      message: error.message || 'An unexpected error occurred during translation.'
+    });
+  }
+}
+
+/**
  * Handles GET /api/status
  */
 function handleStatus(req, res) {
@@ -429,5 +473,6 @@ module.exports = {
   handleAnalyzeEmail,
   handleAnalyzeScreenshot,
   handleChat,
+  handleTranslateScam,
   handleStatus
 };

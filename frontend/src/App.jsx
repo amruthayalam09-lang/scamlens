@@ -17,6 +17,7 @@ import SafetyChecklist from './components/SafetyChecklist';
 import Disclaimer from './components/Disclaimer';
 import ApiKeyNotice from './components/ApiKeyNotice';
 import Dashboard from './components/Dashboard';
+import ScamTranslator from './components/ScamTranslator';
 import { saveAnalysisRecord } from './utils/historyStorage';
 import {
   ShieldCheckIcon,
@@ -308,6 +309,11 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const scrollToTranslator = () => {
+    const el = document.getElementById('scam-translator');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const scrollToScreenshot = () => {
     const el = document.getElementById('screenshot-analyzer');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -321,6 +327,12 @@ export default function App() {
   const scrollToHowItWorks = () => {
     const el = document.getElementById('how-it-works');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleOpenTranslatorInScanner = (text) => {
+    setActiveTab('message');
+    setMessage(text);
+    scrollToScanner();
   };
 
   const handleLoadInScanner = (record) => {
@@ -402,6 +414,15 @@ export default function App() {
                 >
                   <ImageIcon size={18} />
                   <span>Screenshot OCR</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-hero-assistant"
+                  onClick={scrollToTranslator}
+                >
+                  <GlobeIcon size={18} />
+                  <span>Scam Translator</span>
                 </button>
 
                 <button
@@ -658,7 +679,10 @@ export default function App() {
           </div>
         </section>
 
-        {/* 5. AI Assistant Section */}
+        {/* 6. Multilingual Scam Translator Section */}
+        <ScamTranslator onOpenInScanner={handleOpenTranslatorInScanner} />
+
+        {/* 7. AI Assistant Section */}
         <section id="ai-assistant" className="assistant-section">
           <div className="section-container">
             <div className="section-header-center">
