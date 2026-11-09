@@ -129,7 +129,210 @@ Evaluate the message thoroughly and return the JSON assessment.
   }
 }
 
+/**
+ * Intelligent digital safety knowledge fallback for common scam questions.
+ */
+function getFallbackAssistantReply(userMessage) {
+  const q = userMessage.toLowerCase();
+
+  if (q.includes('otp') || q.includes('one time password')) {
+    return `🚨 **CRITICAL SAFETY ADVICE: Never Share Your OTP**
+
+**1. The Golden Rule:**
+No legitimate bank, electric company, government agency, or customer care will EVER ask for your OTP. 
+
+**2. Why Scammers Want It:**
+An OTP (One-Time Password) is the **final lock** protecting your money or account. When a scammer has your card number or username, they trigger an OTP so that **you** authorize their theft.
+
+**3. What You Should Do Right Now:**
+- **Hang up immediately** if someone is on the call demanding it.
+- **Do not reply** to the SMS or message.
+- If you accidentally shared an OTP: Contact your bank fraud helpline immediately and request an immediate account or card freeze. In India, call the national cybercrime helpline at **1930**.`;
+  }
+
+  if (q.includes('job') || q.includes('task') || q.includes('work from home') || q.includes('telegram') || q.includes('part time')) {
+    return `💼 **How to Identify a Fake Job Offer (Task Scam)**
+
+Fake job offers are currently one of the most common cyber scams. Here are the tell-tale warning signs:
+
+**1. "Pay Money to Earn Money":**
+Legitimate employers pay you. If a job asks you to pay an "advance registration fee", "security deposit", or "recharge an investment balance", it is 100% a scam.
+
+**2. Ridiculous Pay for Trivial Work:**
+Promises like *"Earn ₹3,000–₹8,000 per day by simply liking YouTube videos or giving hotel reviews"* are classic recruitment traps designed to lure victims into Telegram groups.
+
+**3. Communication on Unofficial Apps:**
+Scammers strictly avoid official corporate emails and insist on communicating only through **Telegram** or **WhatsApp**.
+
+**4. What to Do:**
+- Never deposit money to unlock tasks or commissions.
+- Stop communication and block the sender.
+- Verify job openings directly on the official company careers portal.`;
+  }
+
+  if (q.includes('phishing') || q.includes('link') || q.includes('url') || q.includes('website')) {
+    return `🔗 **How to Identify Phishing Links & Fake Websites**
+
+Phishing links mimic trusted brands to steal your login credentials and credit card information:
+
+**1. Inspect the Real Destination Domain:**
+Scammers use fake subdomains to fool your eyes:
+- Example: \`http://paypal.com.account-verify.xyz\`
+- Look at the part immediately before the final slash: the actual destination is **account-verify.xyz**, NOT PayPal!
+
+**2. Look for Typosquatting (Lookalike Spelling):**
+Scammers register misspelled domains such as \`amaz0n-support.com\`, \`micros0ft-login.com\`, or \`netflixx-billing.com\`.
+
+**3. Shortened Links:**
+Be wary of mystery shortened URLs like \`bit.ly\`, \`tinyurl\`, or \`is.gd\` sent via SMS, as they disguise the actual malicious website.
+
+**4. Safety Step:**
+Never click verification links sent in unexpected text messages. Always open your browser and navigate to the official website manually.`;
+  }
+
+  if (q.includes('upi') || q.includes('gpay') || q.includes('phonepe') || q.includes('paytm') || q.includes('qr code')) {
+    return `💳 **Crucial UPI Rule: How UPI Scams Happen**
+
+**1. THE GOLDEN UPI RULE:**
+👉 **You NEVER need to enter your UPI PIN or scan a QR code to RECEIVE money.**
+Entering your UPI PIN ALWAYS **transfers money OUT** of your bank account.
+
+**2. Common UPI Scams:**
+- **"Collect Request" Deception:** Scammers send a payment request disguised as a refund or prize. When you approve and enter your PIN, your money is deducted.
+- **QR Code Scam:** The scammer claims: *"Scan this QR code to receive your advance payment for your OLX item."* Scanning a QR code and entering your PIN pays them!
+- **Fake Screenshot of Payment:** Scammers show a fake screenshot claiming money was sent, and ask you to return the "excess" amount.
+
+**3. Immediate Defensive Action:**
+If you entered your PIN, immediately open your UPI app, disconnect your bank account, and report the transaction to your bank and **1930** (Cybercrime Helpline).`;
+  }
+
+  if (q.includes('money') || q.includes('lost') || q.includes('cheated') || q.includes('sent')) {
+    return `🚨 **EMERGENCY: Immediate Steps if You Sent Money to a Scammer**
+
+Act within the **"Golden Hour"** (first 2-3 hours) to maximize the chance of freezing the funds:
+
+**1. Contact Your Bank Immediately:**
+Call your bank's dedicated 24/7 fraud helpline (found on the back of your debit card or official app). Request an immediate freeze on the transaction reference number (UTR / Txn ID).
+
+**2. Report on the Cybercrime Helpline:**
+- In India: Call **1930** (Citizen Financial Cyber Fraud Reporting and Management System) or visit **cybercrime.gov.in**.
+- Provide transaction details, scammer account/UPI ID, and phone number.
+
+**3. Block and Document:**
+- Take full screenshots of the chat, SMS, call log, and payment receipts before they are deleted.
+- Block the scammer across all platforms and never send further money to "recovery agents" (they are often secondary scammers).`;
+  }
+
+  // General default safety guidance
+  return `🛡️ **ScamLens Digital Safety Guidance**
+
+Online scams often rely on psychological manipulation rather than high-tech hacking. Remember these core safety habits:
+
+**1. Question Artificial Urgency:**
+Scammers create fake panic ("Your electricity will be cut off tonight", "Your bank account is frozen", "Urgent legal action"). Pause and take a breath—genuine organizations will never demand instant compliance within minutes.
+
+**2. Verify Independently:**
+Always contact the official organization through their verified website or customer care number from your billing statement, never the phone number provided in a suspicious SMS.
+
+**3. Protect Sensitive Credentials:**
+Never share OTPs, UPI PINs, passwords, or install remote access software (like AnyDesk or TeamViewer) at anyone's request.
+
+*You can ask me specific questions like "How do I identify a fake job offer?", "Someone is asking for my OTP", or "How do UPI scams happen?"*`;
+}
+
+/**
+ * Chats with the ScamLens AI Assistant using Google Gemini AI.
+ * Acts as a digital safety assistant educating users about online scams, fraud prevention, and cybersecurity.
+ * @param {string} userMessage The user's query or scenario
+ * @param {Array} history Conversation history: [{ role: 'user'|'model', text: string }]
+ * @returns {Promise<Object>} Response containing the assistant's reply
+ */
+async function chatWithAssistant(userMessage, history = []) {
+  if (!userMessage || typeof userMessage !== 'string' || userMessage.trim().length === 0) {
+    throw new Error('Please provide a message to chat with the AI assistant.');
+  }
+
+  const cleanMessage = userMessage.trim();
+
+  if (!isGeminiConfigured()) {
+    return {
+      success: true,
+      reply: getFallbackAssistantReply(cleanMessage),
+      isFallback: true,
+      modelUsed: 'ScamLens Safety Knowledge Engine',
+      note: 'To activate full dynamic conversational AI, configure GEMINI_API_KEY in your environment.'
+    };
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+    const systemInstruction = `
+You are the "ScamLens AI Assistant", an empathetic, highly knowledgeable, and practical digital safety and fraud-prevention assistant.
+Your mission is to educate ordinary people about online scams, fraud prevention, social engineering, and practical cybersecurity.
+
+Core Guidelines:
+1. Simplicity & Clarity: Use plain, conversational English that is crystal clear to ordinary, non-technical people. Avoid dense legal or technical jargon.
+2. Actionable Countermeasures: Always provide clear, step-by-step actions the user should take right now (e.g. "Do not share the OTP", "Block this sender", "Contact your bank immediately", "Call national cyber fraud helpline 1930").
+3. Reassuring & Calm Tone: Users asking questions may be anxious or confused. Be compassionate, supportive, and objective.
+4. Explain Deception Mechanics: Clearly explain *why* a particular tactic is dangerous (e.g. how OTPs authorize fund transfers, how remote access apps like AnyDesk give full phone control, or why legitimate employers never demand advance fees).
+5. Formatting: Use structured bullet points, bold key terms, and short paragraphs so advice is effortless to read on both desktop and mobile.
+6. Urgent Triage: If a user reveals they already sent money or shared passwords, immediately lead with critical emergency actions: contact the bank / payment app fraud line, lock netbanking, and report to authorities.
+`;
+
+    const contents = [];
+    if (Array.isArray(history)) {
+      history.slice(-8).forEach(item => {
+        if (item && item.text && (item.role === 'user' || item.role === 'model')) {
+          contents.push({
+            role: item.role,
+            parts: [{ text: item.text }]
+          });
+        }
+      });
+    }
+
+    contents.push({
+      role: 'user',
+      parts: [{ text: cleanMessage }]
+    });
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: contents,
+      config: {
+        systemInstruction: systemInstruction,
+        temperature: 0.4,
+        httpOptions: { timeout: 25000 }
+      }
+    });
+
+    const replyText = response.text;
+    if (!replyText) {
+      throw new Error('Gemini model did not return any text.');
+    }
+
+    return {
+      success: true,
+      reply: replyText.trim(),
+      isFallback: false,
+      modelUsed: 'gemini-2.0-flash',
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Gemini Assistant chat error:', error.message);
+    return {
+      success: true,
+      reply: getFallbackAssistantReply(cleanMessage),
+      isFallback: true,
+      errorNotice: `Gemini API service temporarily unavailable: ${error.message}`,
+      modelUsed: 'ScamLens Safety Fallback Guide'
+    };
+  }
+}
+
 module.exports = {
   isGeminiConfigured,
-  analyzeWithGemini
+  analyzeWithGemini,
+  chatWithAssistant
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import HeroIllustration from './components/HeroIllustration';
+import AiAssistant from './components/AiAssistant';
 import MessageInput from './components/MessageInput';
 import LinkInput from './components/LinkInput';
 import EmailInput from './components/EmailInput';
@@ -271,6 +272,11 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const scrollToAssistant = () => {
+    const el = document.getElementById('ai-assistant');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const scrollToHowItWorks = () => {
     const el = document.getElementById('how-it-works');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -311,8 +317,17 @@ export default function App() {
                   className="btn-hero-primary"
                   onClick={scrollToScanner}
                 >
+                  <ZapIcon size={18} />
+                  <span>Scan Content</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-hero-assistant"
+                  onClick={scrollToAssistant}
+                >
                   <SparklesIcon size={18} />
-                  <span>Try Live Scanner</span>
+                  <span>Ask AI Assistant</span>
                 </button>
 
                 <button
@@ -526,6 +541,22 @@ export default function App() {
           </div>
         </section>
 
+        {/* 4. AI Assistant Section */}
+        <section id="ai-assistant" className="assistant-section">
+          <div className="section-container">
+            <div className="section-header-center">
+              <span className="section-eyebrow">INTERACTIVE SAFETY ADVISOR</span>
+              <h2 className="section-heading">ScamLens AI Assistant</h2>
+              <p className="section-subheading">
+                Have questions about a confusing message, unexpected OTP request, or job offer?
+                Ask our digital safety assistant for instant, plain-English guidance.
+              </p>
+            </div>
+
+            <AiAssistant geminiConfigured={geminiConfigured} />
+          </div>
+        </section>
+
         {/* 5. How It Works Section */}
         <section id="how-it-works" className="how-it-works-section">
           <div className="section-container">
@@ -652,6 +683,7 @@ export default function App() {
                 <button type="button" className="footer-link-btn" onClick={scrollToScanner}>Message Scanner</button>
                 <button type="button" className="footer-link-btn" onClick={scrollToScanner}>URL Inspector</button>
                 <button type="button" className="footer-link-btn" onClick={scrollToScanner}>Email Auditor</button>
+                <button type="button" className="footer-link-btn" onClick={scrollToAssistant}>AI Assistant</button>
               </div>
 
               <div className="footer-links-col">

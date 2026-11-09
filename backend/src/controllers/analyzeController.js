@@ -4,7 +4,7 @@
  */
 
 const { runRuleBasedAnalysis } = require('../services/ruleEngine');
-const { analyzeWithGemini, isGeminiConfigured } = require('../services/geminiService');
+const { analyzeWithGemini, isGeminiConfigured, chatWithAssistant } = require('../services/geminiService');
 const { analyzeUrl } = require('../services/urlEngine');
 const { analyzeEmail } = require('../services/emailEngine');
 
@@ -169,6 +169,38 @@ function handleAnalyzeEmail(req, res) {
 }
 
 /**
+ * Handles POST /api/chat or /api/assistant
+ */
+async function handleChat(req, res) {
+  try {
+    const { message, history } = req.body;
+
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+      return res.status(400).json({
+        error: 'Invalid input',
+        message: 'Please provide a non-empty question or message for the AI assistant.'
+      });
+    }
+
+    if (message.length > 3000) {
+      return res.status(400).json({
+        error: 'Message too long',
+        message: 'Please keep your question under 3000 characters.'
+      });
+    }
+
+    const result = await chatWithAssistant(message.trim(), Array.isArray(history) ? history : []);
+    return res.json(result);
+  } catch (error) {
+    console.error('Chat error:', error);
+    return res.status(500).json({
+      error: 'Assistant Error',
+      message: error.message || 'An error occurred while communicating with the AI Assistant.'
+    });
+  }
+}
+
+/**
  * Handles GET /api/status
  */
 function handleStatus(req, res) {
@@ -184,5 +216,6 @@ module.exports = {
   handleAnalyze,
   handleAnalyzeUrl,
   handleAnalyzeEmail,
+  handleChat,
   handleStatus
 };

@@ -49,6 +49,10 @@ export default function Header({ backendStatus, geminiConfigured, onScanClick })
           <button type="button" className="nav-link" onClick={() => scrollTo('scanner')}>
             Scanner
           </button>
+          <button type="button" className="nav-link nav-link-assistant" onClick={() => scrollTo('ai-assistant')}>
+            <SparklesIcon size={14} className="nav-assistant-icon" />
+            <span>AI Assistant</span>
+          </button>
           <button type="button" className="nav-link" onClick={() => scrollTo('how-it-works')}>
             How it Works
           </button>
