@@ -331,8 +331,131 @@ Core Guidelines:
   }
 }
 
+/**
+ * Analyzes a screenshot using Gemini Vision capabilities.
+ * Performs OCR to extract visible text, analyzes for phishing, fake jobs, payment/OTP requests, lottery, investments,
+ * scores the threat level, and extracts warning signs.
+ * @param {string} base64Data Base64 image payload (stripped of data:image/xxx;base64, prefix)
+ * @param {string} mimeType 'image/png' | 'image/jpeg' | 'image/jpg'
+ * @returns {Promise<Object>}
+ */
+async function analyzeScreenshotWithGemini(base64Data, mimeType = 'image/png') {
+  if (!isGeminiConfigured()) {
+    return {
+      available: false,
+      reason: 'MISSING_API_KEY',
+      message: 'Google Gemini API key is required for Vision OCR and screenshot deception analysis.',
+      setupInstructions: {
+        step1: 'Obtain a free API key at Google AI Studio: https://aistudio.google.com/app/apikey',
+        step2: 'Add GEMINI_API_KEY to backend/.env or Vercel Settings',
+        step3: 'Restart your backend server'
+      }
+    };
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+    const systemInstruction = `
+You are the multimodal computer vision security engine for "ScamLens", a safety tool protecting ordinary people against cyber fraud.
+Your job is to inspect screenshots of SMS messages, WhatsApp chats, emails, banking alerts, payment screens, QR codes, social media DMs, or fake websites.
+
+Task:
+1. Extract ALL readable text from the screenshot accurately (OCR).
+2. Deconstruct the content for scam patterns:
+   - Phishing attempts & credential theft
+   - Fake job offers (Telegram tasks, YouTube like commissions)
+   - Payment requests & fake UPI QR codes
+   - Demands for OTP or banking passwords
+   - Fake lottery winnings or prize notifications
+   - Investment scams (guaranteed crypto doubling)
+   - Suspicious links or spoofed brand domains
+   - Impersonation of officials (banks, police, electricity officers, delivery agents)
+3. Return a valid JSON object matching this schema:
+{
+  "extractedText": "Complete text extracted from the screenshot exactly as visible",
+  "scamType": "Short classification (e.g. Electricity Disconnection Phishing, Telegram VIP Job Scam, Bank KYC Suspension, Fake Courier Alert, Safe Legitimate Message)",
+  "riskScore": number between 0 and 100,
+  "riskLevel": "Low Risk" | "Moderate Risk" | "High Risk",
+  "summary": "2-3 concise sentences in plain English explaining what this screenshot depicts and why it is dangerous or safe.",
+  "suspiciousPhrases": [
+    {
+      "phrase": "Exact phrase from the screenshot text that is suspicious",
+      "explanation": "Why this specific phrase is deceptive in plain English",
+      "severity": "high" | "medium" | "low",
+      "recommendation": "Defensive action for this clue"
+    }
+  ],
+  "visualClues": [
+    "Specific visual red flags seen in the image, such as fake app headers, urgency countdowns, unverified badges, or blurred sender details"
+  ],
+  "safetyRecommendations": [
+    "Actionable, step-by-step instructions the user should follow immediately"
+  ]
+}
+
+Respond ONLY with the JSON object. Do not include markdown code blocks.
+`;
+
+    const userPrompt = `
+Analyze this screenshot thoroughly. Extract all visible text and evaluate for scams, fraud, phishing, or impersonation.
+Return the structured JSON analysis report.
+`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              inlineData: {
+                mimeType: mimeType,
+                data: base64Data
+              }
+            },
+            {
+              text: userPrompt
+            }
+          ]
+        }
+      ],
+      config: {
+        systemInstruction: systemInstruction,
+        responseMimeType: 'application/json',
+        temperature: 0.2,
+        httpOptions: { timeout: 35000 }
+      }
+    });
+
+    const responseText = response.text;
+    if (!responseText) {
+      throw new Error('Gemini Vision model did not return any response.');
+    }
+
+    let parsedResult;
+    try {
+      parsedResult = JSON.parse(responseText);
+    } catch (parseErr) {
+      const cleanJson = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
+      parsedResult = JSON.parse(cleanJson);
+    }
+
+    return {
+      available: true,
+      data: parsedResult,
+      modelUsed: 'gemini-2.0-flash-vision',
+      analyzedAt: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Gemini Vision execution error:', error.message);
+    throw error;
+  }
+}
+
 module.exports = {
   isGeminiConfigured,
   analyzeWithGemini,
-  chatWithAssistant
+  chatWithAssistant,
+  analyzeScreenshotWithGemini
 };

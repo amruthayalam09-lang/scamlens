@@ -368,3 +368,4 @@ export default function AiAssistant({ geminiConfigured }) {
     </div>
   );
 }
+

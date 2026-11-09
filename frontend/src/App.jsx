@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import HeroIllustration from './components/HeroIllustration';
 import AiAssistant from './components/AiAssistant';
+import ScreenshotAnalyzer from './components/ScreenshotAnalyzer';
 import MessageInput from './components/MessageInput';
 import LinkInput from './components/LinkInput';
 import EmailInput from './components/EmailInput';
@@ -24,7 +25,8 @@ import {
   MessageSquareIcon,
   CpuIcon,
   SparklesIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  ImageIcon
 } from './components/Icons';
 
 export default function App() {
@@ -272,6 +274,11 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const scrollToScreenshot = () => {
+    const el = document.getElementById('screenshot-analyzer');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const scrollToAssistant = () => {
     const el = document.getElementById('ai-assistant');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -324,10 +331,19 @@ export default function App() {
                 <button
                   type="button"
                   className="btn-hero-assistant"
+                  onClick={scrollToScreenshot}
+                >
+                  <ImageIcon size={18} />
+                  <span>Screenshot OCR</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-hero-assistant"
                   onClick={scrollToAssistant}
                 >
                   <SparklesIcon size={18} />
-                  <span>Ask AI Assistant</span>
+                  <span>AI Assistant</span>
                 </button>
 
                 <button
@@ -541,7 +557,22 @@ export default function App() {
           </div>
         </section>
 
-        {/* 4. AI Assistant Section */}
+        {/* 4. Screenshot Analyzer Section */}
+        <section id="screenshot-analyzer" className="screenshot-section">
+          <div className="section-container">
+            <div className="section-header-center">
+              <span className="section-eyebrow">MULTIMODAL COMPUTER VISION OCR</span>
+              <h2 className="section-heading">Screenshot Scam Analyzer</h2>
+              <p className="section-subheading">
+                Upload or drop any screenshot of suspicious WhatsApp chats, SMS alerts, fake job offers, or payment screens to detect hidden scam patterns.
+              </p>
+            </div>
+
+            <ScreenshotAnalyzer geminiConfigured={geminiConfigured} />
+          </div>
+        </section>
+
+        {/* 5. AI Assistant Section */}
         <section id="ai-assistant" className="assistant-section">
           <div className="section-container">
             <div className="section-header-center">
@@ -681,6 +712,7 @@ export default function App() {
               <div className="footer-links-col">
                 <h5 className="footer-heading">Platform</h5>
                 <button type="button" className="footer-link-btn" onClick={scrollToScanner}>Message Scanner</button>
+                <button type="button" className="footer-link-btn" onClick={scrollToScreenshot}>Screenshot OCR</button>
                 <button type="button" className="footer-link-btn" onClick={scrollToScanner}>URL Inspector</button>
                 <button type="button" className="footer-link-btn" onClick={scrollToScanner}>Email Auditor</button>
                 <button type="button" className="footer-link-btn" onClick={scrollToAssistant}>AI Assistant</button>

@@ -4,7 +4,12 @@
  */
 
 const { runRuleBasedAnalysis } = require('./ruleEngine');
-const { analyzeWithGemini, isGeminiConfigured, chatWithAssistant } = require('./geminiService');
+const {
+  analyzeWithGemini,
+  isGeminiConfigured,
+  chatWithAssistant,
+  analyzeScreenshotWithGemini
+} = require('./geminiService');
 const { analyzeUrl } = require('./urlEngine');
 const { analyzeEmail } = require('./emailEngine');
 
@@ -201,6 +206,124 @@ async function handleChat(req, res) {
 }
 
 /**
+ * Handles POST /api/analyze-screenshot
+ */
+async function handleAnalyzeScreenshot(req, res) {
+  try {
+    const { image, mimeType = 'image/png' } = req.body;
+
+    if (!image || typeof image !== 'string' || image.trim().length === 0) {
+      return res.status(400).json({
+        error: 'Invalid input',
+        message: 'Please provide a valid screenshot image in base64 format.'
+      });
+    }
+
+    const allowedMimeTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+    const cleanMime = mimeType.toLowerCase();
+    if (!allowedMimeTypes.includes(cleanMime)) {
+      return res.status(400).json({
+        error: 'Unsupported image format',
+        message: 'Please upload a PNG, JPG, or JPEG image.'
+      });
+    }
+
+    // Strip prefix if present (e.g. data:image/png;base64,)
+    const cleanBase64 = image.replace(/^data:image\/\w+;base64,/, '').trim();
+
+    // Security check: Payload size limit (approx 6MB decoded)
+    if (cleanBase64.length > 9000000) {
+      return res.status(400).json({
+        error: 'File too large',
+        message: 'Screenshot exceeds maximum allowed size (5MB). Please upload a smaller image.'
+      });
+    }
+
+    // Run multimodal Gemini Vision analysis
+    const visionResult = await analyzeScreenshotWithGemini(cleanBase64, cleanMime === 'image/jpg' ? 'image/jpeg' : cleanMime);
+
+    if (!visionResult.available) {
+      return res.status(503).json({
+        error: 'Vision AI Unavailable',
+        message: visionResult.message,
+        setupInstructions: visionResult.setupInstructions
+      });
+    }
+
+    const aiData = visionResult.data || {};
+    const extractedText = aiData.extractedText || '';
+
+    // Run Rule Engine on extracted text as an additional heuristic verification layer
+    const ruleFindings = extractedText ? runRuleBasedAnalysis(extractedText) : { matches: [], score: 0, categoriesDetected: [] };
+
+    // Combine suspicious phrases
+    const warningSigns = [];
+    if (Array.isArray(aiData.suspiciousPhrases)) {
+      aiData.suspiciousPhrases.forEach(sp => {
+        warningSigns.push({
+          phraseOrClue: sp.phrase,
+          plainExplanation: sp.explanation,
+          severity: sp.severity || 'high',
+          recommendation: sp.recommendation
+        });
+      });
+    } else if (Array.isArray(aiData.warningSigns)) {
+      aiData.warningSigns.forEach(ws => warningSigns.push(ws));
+    }
+
+    // Incorporate rule matches if not already covered
+    ruleFindings.matches.forEach(m => {
+      const alreadyFlagged = warningSigns.some(ws => ws.phraseOrClue && ws.phraseOrClue.toLowerCase().includes(m.phrase.toLowerCase()));
+      if (!alreadyFlagged) {
+        warningSigns.push({
+          phraseOrClue: m.phrase,
+          plainExplanation: m.explanation,
+          severity: m.severity || 'medium',
+          recommendation: m.recommendation
+        });
+      }
+    });
+
+    const finalRiskScore = typeof aiData.riskScore === 'number'
+      ? Math.min(100, Math.max(0, Math.round(aiData.riskScore)))
+      : (ruleFindings.score > 0 ? ruleFindings.score : 20);
+
+    let finalRiskLevel = aiData.riskLevel;
+    if (!finalRiskLevel) {
+      if (finalRiskScore >= 60) finalRiskLevel = 'High Risk';
+      else if (finalRiskScore >= 25) finalRiskLevel = 'Moderate Risk';
+      else finalRiskLevel = 'Low Risk';
+    }
+
+    return res.json({
+      success: true,
+      assessment: {
+        extractedText,
+        scamType: aiData.scamType || 'Screenshot Communication',
+        riskScore: finalRiskScore,
+        riskLevel: finalRiskLevel,
+        summary: aiData.summary || 'Screenshot analysis completed.',
+        warningSigns,
+        visualClues: aiData.visualClues || [],
+        safetyRecommendations: aiData.safetyRecommendations || [
+          'Verify unexpected messages directly with the sender through an official phone call.',
+          'Never share passwords, UPI PINs, or OTPs.',
+          'Do not install remote assistance applications (AnyDesk, TeamViewer) from unverified requests.'
+        ],
+        ruleFindings,
+        disclaimer: 'Notice: ScamLens Screenshot Analyzer utilizes optical character recognition and multimodal AI threat modeling. This educational assessment is advisory. Always independently verify suspicious communications before sharing funds or credentials.'
+      }
+    });
+  } catch (error) {
+    console.error('Screenshot analysis error:', error);
+    return res.status(500).json({
+      error: 'Screenshot Analysis Failed',
+      message: error.message || 'Could not analyze screenshot. Please try another image.'
+    });
+  }
+}
+
+/**
  * Handles GET /api/status
  */
 function handleStatus(req, res) {
@@ -216,6 +339,7 @@ module.exports = {
   handleAnalyze,
   handleAnalyzeUrl,
   handleAnalyzeEmail,
+  handleAnalyzeScreenshot,
   handleChat,
   handleStatus
 };
